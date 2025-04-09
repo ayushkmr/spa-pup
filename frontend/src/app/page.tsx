@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { waitingListApi, puppyApi } from "@/lib/api";
 import { WaitingList, WaitingListEntry } from "@/types";
 import DraggableWaitingList from "@/components/DraggableWaitingList";
+import PuppyGallery from "@/components/PuppyGallery";
 
 // Expose API for debugging
 if (typeof window !== 'undefined') {
@@ -132,45 +133,115 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-      <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
-        <div>
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Today's Waiting List</h3>
-          <p className="mt-1 max-w-2xl text-sm text-gray-500">
-            {waitingList ? formatDate(waitingList.date) : 'No date available'}
-          </p>
-        </div>
-        <button
-          onClick={fetchTodayList}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Refresh
-        </button>
+    <div className="space-y-8">
+      {/* Puppy Gallery Section */}
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+        <h3 className="text-xl leading-6 font-medium text-gray-900 mb-4">Our Pampered Pups</h3>
+        <PuppyGallery className="mt-6" />
       </div>
 
-      {waitingList && waitingList.entries.length > 0 ? (
-        <div className="border-t border-gray-200">
-          <DraggableWaitingList
-            entries={waitingList.entries}
-            onReorder={handleReorderEntries}
-            onMarkServiced={handleMarkServiced}
-            reordering={reordering}
-            formatTime={formatTime}
-          />
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🐶</div>
-          <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">No puppies on the waiting list yet</h3>
-          <p className="text-sm text-gray-500 mb-6">Add a puppy to get started</p>
+      {/* Quick Actions Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+          <div className="flex items-center mb-4">
+            <div className="bg-purple-100 p-3 rounded-full mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">Add a New Puppy</h3>
+          </div>
+          <p className="text-sm text-gray-500 mb-6">Register a new puppy in our system before adding them to the queue.</p>
           <a
-            href="/add-entry"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            href="/add-puppy"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
           >
-            Add to Waiting List
+            Add New Puppy
           </a>
         </div>
-      )}
+
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+          <div className="flex items-center mb-4">
+            <div className="bg-pink-100 p-3 rounded-full mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">Add to Today's Queue</h3>
+          </div>
+          <p className="text-sm text-gray-500 mb-6">Add an existing puppy to today's waiting list for services.</p>
+          <a
+            href="/add-entry"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors"
+          >
+            Add to Queue
+          </a>
+        </div>
+      </div>
+
+      {/* Today's Queue Section */}
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+          <div>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">Today's Puppy Queue</h3>
+            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+              {waitingList ? formatDate(waitingList.date) : 'No date available'}
+            </p>
+          </div>
+          <button
+            onClick={fetchTodayList}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+          >
+            Refresh
+          </button>
+        </div>
+
+        {waitingList && waitingList.entries.length > 0 ? (
+          <div className="border-t border-gray-200">
+            <DraggableWaitingList
+              entries={waitingList.entries}
+              onReorder={handleReorderEntries}
+              onMarkServiced={handleMarkServiced}
+              reordering={reordering}
+              formatTime={formatTime}
+            />
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🐶</div>
+            <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">No puppies in the queue yet</h3>
+            <p className="text-sm text-gray-500 mb-6">Add a puppy to get started</p>
+            <a
+              href="/add-entry"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+            >
+              Add to Queue
+            </a>
+          </div>
+        )}
+      </div>
+
+      {/* Services Section */}
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Our Services</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
+            <div className="text-2xl mb-2">🛁</div>
+            <h4 className="font-medium text-purple-800 mb-1">Bath & Dry</h4>
+            <p className="text-sm text-gray-600">Full bath with premium shampoo, blow dry, and brush out.</p>
+          </div>
+          <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
+            <div className="text-2xl mb-2">✂️</div>
+            <h4 className="font-medium text-purple-800 mb-1">Full Grooming</h4>
+            <p className="text-sm text-gray-600">Complete grooming service including haircut, styling, and nail trim.</p>
+          </div>
+          <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
+            <div className="text-2xl mb-2">🦷</div>
+            <h4 className="font-medium text-purple-800 mb-1">Teeth Brushing</h4>
+            <p className="text-sm text-gray-600">Gentle teeth cleaning with pet-safe toothpaste for fresh breath.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

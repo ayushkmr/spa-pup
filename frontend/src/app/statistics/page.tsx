@@ -8,7 +8,7 @@ export default function StatisticsPage() {
   const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Date range state
   const [startDate, setStartDate] = useState<string>(
     format(startOfMonth(subMonths(new Date(), 1)), 'yyyy-MM-dd')
@@ -47,21 +47,42 @@ export default function StatisticsPage() {
 
   // Get color based on service
   const getServiceColor = (service: string) => {
-    const colors = [
-      'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 
-      'bg-purple-500', 'bg-pink-500', 'bg-indigo-500',
-      'bg-red-500', 'bg-orange-500', 'bg-teal-500'
-    ];
-    
-    // Generate a consistent index based on the service name
-    const index = service.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
-    return colors[index];
+    const serviceColors: Record<string, string> = {
+      'Bath & Dry': 'bg-purple-500',
+      'Full Grooming': 'bg-indigo-500',
+      'Teeth Brushing': 'bg-pink-500',
+      'Nail Trim': 'bg-blue-500',
+      'Ear Cleaning': 'bg-teal-500',
+      'Flea Treatment': 'bg-green-500',
+      'Haircut': 'bg-yellow-500',
+      'Deshedding': 'bg-orange-500',
+      'Massage': 'bg-red-500'
+    };
+
+    return serviceColors[service] || 'bg-gray-500';
+  };
+
+  // Get service icon
+  const getServiceIcon = (service: string) => {
+    const serviceIcons: Record<string, string> = {
+      'Bath & Dry': '🛁',
+      'Full Grooming': '✂️',
+      'Teeth Brushing': '🦷',
+      'Nail Trim': '💅',
+      'Ear Cleaning': '👂',
+      'Flea Treatment': '🦟',
+      'Haircut': '💇',
+      'Deshedding': '🧹',
+      'Massage': '💆'
+    };
+
+    return serviceIcons[service] || '🐶';
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
       </div>
     );
   }
@@ -91,7 +112,7 @@ export default function StatisticsPage() {
           View statistics and metrics for your puppy spa
         </p>
       </div>
-      
+
       <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
         {/* Date Range Selector */}
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -105,7 +126,7 @@ export default function StatisticsPage() {
               name="startDate"
               value={startDate}
               onChange={(e) => handleDateChange(e, setStartDate)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
             />
           </div>
           <div>
@@ -118,11 +139,11 @@ export default function StatisticsPage() {
               name="endDate"
               value={endDate}
               onChange={(e) => handleDateChange(e, setEndDate)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 sm:text-sm"
             />
           </div>
         </div>
-        
+
         {statistics && (
           <div className="space-y-8">
             {/* Summary Cards */}
@@ -130,7 +151,7 @@ export default function StatisticsPage() {
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                    <div className="flex-shrink-0 bg-purple-600 rounded-md p-3">
                       <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
@@ -150,11 +171,11 @@ export default function StatisticsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
+                    <div className="flex-shrink-0 bg-pink-500 rounded-md p-3">
                       <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -177,11 +198,11 @@ export default function StatisticsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                    <div className="flex-shrink-0 bg-indigo-500 rounded-md p-3">
                       <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -201,11 +222,11 @@ export default function StatisticsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                    <div className="flex-shrink-0 bg-teal-500 rounded-md p-3">
                       <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                       </svg>
@@ -226,24 +247,27 @@ export default function StatisticsPage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Service Breakdown */}
             <div>
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Service Breakdown</h3>
               <div className="bg-white shadow overflow-hidden sm:rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {Object.entries(statistics.serviceBreakdown).map(([service, count]) => (
                       <div key={service}>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="text-sm font-medium text-gray-700">{service}</div>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center">
+                            <span className="text-xl mr-2">{getServiceIcon(service)}</span>
+                            <div className="text-sm font-medium text-gray-700">{service}</div>
+                          </div>
                           <div className="text-sm font-medium text-gray-700">
                             {count} ({formatPercentage(count, statistics.totalPuppies)})
                           </div>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className={`${getServiceColor(service)} h-2.5 rounded-full`} 
+                        <div className="w-full bg-gray-200 rounded-full h-3">
+                          <div
+                            className={`${getServiceColor(service)} h-3 rounded-full transition-all duration-500 ease-in-out`}
                             style={{ width: formatPercentage(count, statistics.totalPuppies) }}
                           ></div>
                         </div>
@@ -253,7 +277,7 @@ export default function StatisticsPage() {
                 </div>
               </div>
             </div>
-            
+
             {/* Daily Totals */}
             <div>
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Daily Totals</h3>
