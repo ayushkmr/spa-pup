@@ -13,6 +13,7 @@
     "@types/react-beautiful-dnd": "^13.1.8",
     "axios": "^1.8.4",
     "daisyui": "^5.0.17",
+    "date-fns": "^4.1.0",
     "next": "15.2.5",
     "react": "^19.0.0",
     "react-beautiful-dnd": "^13.1.1",
