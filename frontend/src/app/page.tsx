@@ -115,12 +115,6 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      {/* Puppy Gallery Section - Smaller Size */}
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Our Pampered Pups</h3>
-        <PuppyGallery className="mt-2" />
-      </div>
-
       {/* Today's Queue Section */}
       <div>
         <div className="mb-4">
@@ -151,6 +145,12 @@ export default function Home() {
 
         {/* Add to Queue Form */}
         <AddToQueueForm onSuccess={fetchTodayList} />
+      </div>
+
+      {/* Puppy Gallery Section - Moved to bottom */}
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Our Pampered Pups</h3>
+        <PuppyGallery className="mt-2" />
       </div>
 
       {/* Quote Section */}
