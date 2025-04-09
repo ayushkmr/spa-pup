@@ -1,0 +1,40 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model WaitingList {
+  id        Int                  @id @default(autoincrement())
+  date      DateTime             @unique
+  createdAt DateTime             @default(now())
+  entries   WaitingListEntry[]
+}
+
+model Puppy {
+  id        Int                  @id @default(autoincrement())
+  name      String
+  ownerName String
+  createdAt DateTime             @default(now())
+  entries   WaitingListEntry[]
+}
+
+model WaitingListEntry {
+  id              Int         @id @default(autoincrement())
+  waitingListId   Int
+  puppyId         Int
+  serviceRequired String
+  arrivalTime     DateTime    @default(now())
+  position        Int
+  serviced        Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+
+  waitingList     WaitingList @relation(fields: [waitingListId], references: [id])
+  puppy           Puppy       @relation(fields: [puppyId], references: [id])
+
+  @@index([waitingListId])
+  @@index([puppyId])
+}
