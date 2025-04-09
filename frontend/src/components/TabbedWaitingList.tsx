@@ -105,7 +105,7 @@ export default function TabbedWaitingList({
           }`}
           onClick={() => setActiveTab('waiting')}
         >
-          Waiting
+          Waiting ({waitingEntries.length})
         </button>
         <button
           className={`flex-1 py-2 text-center font-medium ${
@@ -115,11 +115,12 @@ export default function TabbedWaitingList({
           }`}
           onClick={() => setActiveTab('serviced')}
         >
-          Serviced
+          Serviced ({servicedEntries.length})
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Desktop view */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -247,6 +248,115 @@ export default function TabbedWaitingList({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile view - Card layout */}
+      <div className="md:hidden">
+        {activeTab === 'waiting' ? (
+          waitingEntries.length > 0 ? (
+            <div className="space-y-3 mt-3">
+              {waitingEntries.map((entry, index) => (
+                <div
+                  key={entry.id}
+                  className={`bg-white rounded-lg shadow p-4 border-l-4 border-purple-500 ${!reordering ? 'active:scale-98 transition-transform' : ''}`}
+                  draggable={!reordering}
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDrop={handleDrop}
+                  onDragEnd={handleDragEnd}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center bg-purple-100 rounded-full">
+                        <span className="text-lg">🐶</span>
+                      </div>
+                      <div className="ml-3">
+                        <div className="text-sm font-medium text-gray-900">
+                          {entry.puppy.name}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {entry.puppy.ownerName}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-semibold bg-purple-100 text-purple-800 px-2 py-1 rounded-full">
+                      #{entry.position}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-gray-500">Service:</span>
+                      <p className="font-medium text-gray-900">{entry.serviceRequired}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Arrival:</span>
+                      <p className="font-medium text-gray-900">{formatTime(entry.arrivalTime)}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      onClick={() => onMarkServiced(entry.id)}
+                      disabled={reordering}
+                      className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                    >
+                      Mark Serviced
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-2">🐶</div>
+              <p className="text-gray-500">No puppies waiting</p>
+            </div>
+          )
+        ) : (
+          servicedEntries.length > 0 ? (
+            <div className="space-y-3 mt-3">
+              {servicedEntries.map((entry) => (
+                <div key={entry.id} className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center bg-green-100 rounded-full">
+                        <span className="text-lg">✅</span>
+                      </div>
+                      <div className="ml-3">
+                        <div className="text-sm font-medium text-gray-900">
+                          {entry.puppy.name}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {entry.puppy.ownerName}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-sm font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                      #{entry.position}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-gray-500">Service:</span>
+                      <p className="font-medium text-gray-900">{entry.serviceRequired}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Completed:</span>
+                      <p className="font-medium text-gray-900">{formatTime(entry.serviceTime || entry.arrivalTime)}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-2">🐶</div>
+              <p className="text-gray-500">No puppies serviced today</p>
+            </div>
+          )
+        )}
       </div>
     </div>
   );

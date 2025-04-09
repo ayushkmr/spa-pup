@@ -286,7 +286,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
 
       <div className="border-t border-gray-200">
         <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label htmlFor="ownerName" className="block text-sm font-medium text-gray-700">
                 Owner Name
@@ -423,11 +423,11 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
               </div>
             </div>
 
-            <div className="md:col-span-2 flex justify-end">
+            <div className="md:col-span-2 flex justify-center sm:justify-end">
               <button
                 type="submit"
                 disabled={loading || !puppyName.trim() || !ownerName.trim() || !serviceRequired}
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:bg-purple-300"
+                className="w-full sm:w-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:bg-purple-300"
               >
                 {loading ? (
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

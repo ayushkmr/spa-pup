@@ -118,8 +118,8 @@ export default function Home() {
       {/* Today's Queue Section */}
       <div>
         <div className="mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">Today's Puppy Queue</h2>
-          <p className="text-base text-gray-500">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Today's Puppy Queue</h2>
+          <p className="text-sm sm:text-base text-gray-500">
             {waitingList ? formatDate(waitingList.date) : 'No date available'}
           </p>
         </div>
@@ -135,10 +135,10 @@ export default function Home() {
               formatTime={formatTime}
             />
           ) : (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🐶</div>
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">No puppies in the queue yet</h3>
-              <p className="text-sm text-gray-500">Add a puppy using the form below</p>
+            <div className="text-center py-8 sm:py-12">
+              <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">🐶</div>
+              <h3 className="text-base sm:text-lg leading-6 font-medium text-gray-900 mb-2">No puppies in the queue yet</h3>
+              <p className="text-xs sm:text-sm text-gray-500">Add a puppy using the form below</p>
             </div>
           )}
         </div>
@@ -148,14 +148,14 @@ export default function Home() {
       </div>
 
       {/* Puppy Gallery Section - Moved to bottom */}
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Our Pampered Pups</h3>
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-3 sm:p-4">
+        <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2 text-center sm:text-left">Our Pampered Pups</h3>
         <PuppyGallery className="mt-2" />
       </div>
 
       {/* Quote Section */}
-      <div className="text-center py-6">
-        <p className="text-sm text-gray-600 italic">"A dog will teach you unconditional love. If you can have that in your life, things won't be too bad." 🐾</p>
+      <div className="text-center py-4 sm:py-6">
+        <p className="text-xs sm:text-sm text-gray-600 italic px-4 sm:px-0">"A dog will teach you unconditional love. If you can have that in your life, things won't be too bad." 🐾</p>
       </div>
     </div>
   );

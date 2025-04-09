@@ -14,6 +14,7 @@ export interface WaitingListEntry {
   position: number;
   serviced: boolean;
   createdAt: string;
+  serviceTime?: string;
   puppy: Puppy;
 }
 

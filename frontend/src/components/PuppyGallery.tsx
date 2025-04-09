@@ -91,50 +91,53 @@ const PuppyGallery: React.FC<PuppyGalleryProps> = ({ className }) => {
       <div className="carousel-container relative">
         <div
           ref={carouselRef}
-          className="flex overflow-x-auto gap-6 pb-6 snap-x scrollbar-hide"
+          className="flex overflow-x-auto gap-4 md:gap-6 pb-6 snap-x scrollbar-hide"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {puppyImages.map((image, index) => (
             <div
               key={index}
-              className={`snap-center shrink-0 first:pl-4 last:pr-4 transition-all duration-300 ${index === currentIndex ? 'scale-100 opacity-100' : 'scale-95 opacity-80'}`}
+              className={`snap-center shrink-0 first:pl-2 md:first:pl-4 last:pr-2 md:last:pr-4 transition-all duration-300 ${index === currentIndex ? 'scale-100 opacity-100' : 'scale-95 opacity-80'}`}
             >
-              <div className="w-60 md:w-72 overflow-hidden rounded-lg bg-white border shadow-md">
-                <div className="relative h-48 w-full">
+              <div className="w-52 sm:w-60 md:w-72 overflow-hidden rounded-lg bg-white border shadow-md">
+                <div className="relative h-40 sm:h-48 w-full">
                   <img
                     src={image.src}
                     alt={image.alt}
                     className="h-full w-full object-cover transition-all hover:scale-105 duration-500"
+                    loading="lazy" // Add lazy loading for better performance
                   />
                 </div>
-                <div className="p-4 text-center text-base text-gray-700 font-medium">
+                <div className="p-3 md:p-4 text-center text-sm md:text-base text-gray-700 font-medium">
                   {image.caption}
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 flex justify-between w-full px-4 z-10">
+        <div className="absolute left-0 top-1/2 transform -translate-y-1/2 flex justify-between w-full px-2 md:px-4 z-10">
           <button
             onClick={handlePrev}
-            className="bg-white rounded-full p-3 shadow-md hover:bg-gray-100 focus:outline-none hover:scale-110 transition-transform"
+            className="bg-white rounded-full p-2 md:p-3 shadow-md hover:bg-gray-100 focus:outline-none hover:scale-110 transition-transform"
+            aria-label="Previous slide"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <button
             onClick={handleNext}
-            className="bg-white rounded-full p-3 shadow-md hover:bg-gray-100 focus:outline-none hover:scale-110 transition-transform"
+            className="bg-white rounded-full p-2 md:p-3 shadow-md hover:bg-gray-100 focus:outline-none hover:scale-110 transition-transform"
+            aria-label="Next slide"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
-        {/* Dots indicator */}
-        <div className="flex justify-center mt-4">
+        {/* Dots indicator - Hide on very small screens */}
+        <div className="flex justify-center mt-2 md:mt-4">
           {puppyImages.map((_, index) => (
             <button
               key={index}
@@ -143,7 +146,7 @@ const PuppyGallery: React.FC<PuppyGalleryProps> = ({ className }) => {
                 setCurrentIndex(index);
                 scrollToCurrentSlide();
               }}
-              className={`h-2 w-2 mx-1 rounded-full transition-all ${index === currentIndex ? 'bg-purple-600 w-4' : 'bg-gray-300'}`}
+              className={`h-1.5 md:h-2 w-1.5 md:w-2 mx-0.5 md:mx-1 rounded-full transition-all ${index === currentIndex ? 'bg-purple-600 w-3 md:w-4' : 'bg-gray-300'}`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
