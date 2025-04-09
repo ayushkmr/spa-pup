@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { puppyApi, waitingListApi } from "@/lib/api";
 import { Puppy } from "@/types";
 
@@ -9,43 +9,199 @@ interface AddToQueueFormProps {
 }
 
 export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
-  const [puppies, setPuppies] = useState<Puppy[]>([]);
-  const [selectedPuppyId, setSelectedPuppyId] = useState<number | "">("");
+  // Form state
+  const [ownerName, setOwnerName] = useState("");
+  const [puppyName, setPuppyName] = useState("");
   const [serviceRequired, setServiceRequired] = useState("");
   const [notes, setNotes] = useState("");
+
+  // UI state
   const [loading, setLoading] = useState(false);
-  const [fetchingPuppies, setFetchingPuppies] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Puppy data state
+  const [puppies, setPuppies] = useState<Puppy[]>([]);
+  const [filteredPuppies, setFilteredPuppies] = useState<Puppy[]>([]);
+  const [showPuppyDropdown, setShowPuppyDropdown] = useState(false);
+  const [showOwnerDropdown, setShowOwnerDropdown] = useState(false);
+  const [selectedPuppy, setSelectedPuppy] = useState<Puppy | null>(null);
+  const [isCreatingNewPuppy, setIsCreatingNewPuppy] = useState(false);
+
+  // Refs for click outside handling
+  const puppyDropdownRef = useRef<HTMLDivElement>(null);
+  const ownerDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch all puppies on component mount
   useEffect(() => {
     const fetchPuppies = async () => {
       try {
-        setFetchingPuppies(true);
         const response = await puppyApi.getAll();
         setPuppies(response.data);
       } catch (err) {
         console.error("Failed to fetch puppies:", err);
         setError("Failed to load puppies. Please try again.");
-      } finally {
-        setFetchingPuppies(false);
       }
     };
 
     fetchPuppies();
   }, []);
 
+  // Filter puppies based on input
+  useEffect(() => {
+    if (puppyName.trim() === "") {
+      setFilteredPuppies([]);
+      setShowPuppyDropdown(false);
+      return;
+    }
+
+    const filtered = puppies.filter(puppy =>
+      puppy.name.toLowerCase().includes(puppyName.toLowerCase())
+    );
+
+    setFilteredPuppies(filtered);
+    setShowPuppyDropdown(true);
+
+    // If exact match is found, auto-select the puppy
+    const exactMatch = filtered.find(p => p.name.toLowerCase() === puppyName.toLowerCase());
+    if (exactMatch) {
+      setSelectedPuppy(exactMatch);
+      setOwnerName(exactMatch.ownerName);
+      setIsCreatingNewPuppy(false);
+    } else {
+      setIsCreatingNewPuppy(true);
+    }
+  }, [puppyName, puppies]);
+
+  // Filter owners based on input and update filtered puppies when owner changes
+  useEffect(() => {
+    if (ownerName.trim() === "") {
+      setShowOwnerDropdown(false);
+      return;
+    }
+
+    // Get unique owner names
+    const uniqueOwners = Array.from(new Set(puppies.map(p => p.ownerName)));
+    const filtered = uniqueOwners.filter(name =>
+      name.toLowerCase().includes(ownerName.toLowerCase())
+    );
+
+    if (filtered.length > 0) {
+      setShowOwnerDropdown(true);
+    } else {
+      setShowOwnerDropdown(false);
+    }
+
+    // Check if there's an exact match for the owner name
+    const exactOwnerMatch = uniqueOwners.find(name =>
+      name.toLowerCase() === ownerName.toLowerCase()
+    );
+
+    // If we have an exact match and the puppy name field is empty,
+    // filter puppies to show only those belonging to this owner
+    if (exactOwnerMatch && puppyName.trim() === "") {
+      const ownerPuppies = puppies.filter(p =>
+        p.ownerName.toLowerCase() === exactOwnerMatch.toLowerCase()
+      );
+
+      if (ownerPuppies.length > 0) {
+        setFilteredPuppies(ownerPuppies);
+        setShowPuppyDropdown(true);
+      }
+    }
+  }, [ownerName, puppies, puppyName]);
+
+  // Handle click outside dropdowns
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (puppyDropdownRef.current && !puppyDropdownRef.current.contains(event.target as Node)) {
+        setShowPuppyDropdown(false);
+      }
+      if (ownerDropdownRef.current && !ownerDropdownRef.current.contains(event.target as Node)) {
+        setShowOwnerDropdown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Handle puppy selection
+  const handleSelectPuppy = (puppy: Puppy) => {
+    setPuppyName(puppy.name);
+    setOwnerName(puppy.ownerName);
+    setSelectedPuppy(puppy);
+    setIsCreatingNewPuppy(false);
+    setShowPuppyDropdown(false);
+  };
+
+  // Handle owner selection
+  const handleSelectOwner = (ownerName: string) => {
+    setOwnerName(ownerName);
+    setShowOwnerDropdown(false);
+
+    // Find puppies belonging to this owner
+    const ownerPuppies = puppies.filter(p =>
+      p.ownerName.toLowerCase() === ownerName.toLowerCase()
+    );
+
+    if (ownerPuppies.length > 0) {
+      setFilteredPuppies(ownerPuppies);
+      setShowPuppyDropdown(true);
+
+      // If there's only one puppy for this owner, auto-select it
+      if (ownerPuppies.length === 1) {
+        setPuppyName(ownerPuppies[0].name);
+        setSelectedPuppy(ownerPuppies[0]);
+        setIsCreatingNewPuppy(false);
+      }
+    }
+  };
+
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedPuppyId || !serviceRequired) {
-      setError("Please fill in all required fields");
+    if (!serviceRequired) {
+      setError("Please select a service");
+      return;
+    }
+
+    if (!puppyName.trim()) {
+      setError("Please enter a puppy name");
+      return;
+    }
+
+    if (!ownerName.trim()) {
+      setError("Please enter an owner name");
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
+
+      let puppyId: number;
+
+      // If creating a new puppy
+      if (isCreatingNewPuppy || !selectedPuppy) {
+        // Create new puppy
+        const createResponse = await puppyApi.create({
+          name: puppyName.trim(),
+          ownerName: ownerName.trim()
+        });
+
+        puppyId = createResponse.data.id;
+
+        // Update puppies list
+        const updatedPuppies = await puppyApi.getAll();
+        setPuppies(updatedPuppies.data);
+      } else {
+        // Use existing puppy
+        puppyId = selectedPuppy.id;
+      }
 
       // Ensure today's list exists
       try {
@@ -56,14 +212,18 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
 
       // Add entry to the list
       await waitingListApi.addEntry({
-        puppyId: Number(selectedPuppyId),
+        puppyId,
         serviceRequired
       });
 
+      // Reset form
       setSuccess(true);
-      setSelectedPuppyId("");
+      setPuppyName("");
+      setOwnerName("");
       setServiceRequired("");
       setNotes("");
+      setSelectedPuppy(null);
+      setIsCreatingNewPuppy(false);
 
       // Call the onSuccess callback to refresh the list
       onSuccess();
@@ -92,9 +252,6 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
     <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
       <div className="px-4 py-5 sm:px-6">
         <h3 className="text-lg leading-6 font-medium text-gray-900">Add Puppy to Queue</h3>
-        <p className="mt-1 max-w-2xl text-sm text-gray-500">
-          Wednesday, April 9, 2025
-        </p>
       </div>
 
       {error && (
@@ -134,36 +291,96 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
               <label htmlFor="ownerName" className="block text-sm font-medium text-gray-700">
                 Owner Name
               </label>
-              <div className="mt-1">
-                <select
-                  id="puppyId"
-                  name="puppyId"
-                  value={selectedPuppyId}
-                  onChange={(e) => setSelectedPuppyId(e.target.value ? Number(e.target.value) : "")}
-                  className="focus:ring-purple-500 focus:border-purple-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
-                  disabled={fetchingPuppies}
-                >
-                  <option value="">Select a puppy</option>
-                  {puppies.map((puppy) => (
-                    <option key={puppy.id} value={puppy.id}>
-                      {puppy.name} ({puppy.ownerName})
-                    </option>
-                  ))}
-                </select>
+              <div className="mt-1 relative" ref={ownerDropdownRef}>
+                <input
+                  type="text"
+                  id="ownerName"
+                  name="ownerName"
+                  value={ownerName}
+                  onChange={(e) => setOwnerName(e.target.value)}
+                  placeholder="Enter owner's name"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md sm:text-sm border-gray-300"
+                />
+                {showOwnerDropdown && (
+                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto max-h-60">
+                    {Array.from(new Set(puppies.map(p => p.ownerName)))
+                      .filter(name => name.toLowerCase().includes(ownerName.toLowerCase()))
+                      .map((name, index) => (
+                        <div
+                          key={index}
+                          onClick={() => handleSelectOwner(name)}
+                          className="cursor-pointer hover:bg-purple-50 py-2 px-3"
+                        >
+                          {name}
+                        </div>
+                      ))
+                    }
+                  </div>
+                )}
               </div>
-              {fetchingPuppies && (
-                <p className="mt-2 text-sm text-gray-500">Loading puppies...</p>
+            </div>
+
+            <div>
+              <label htmlFor="puppyName" className="block text-sm font-medium text-gray-700">
+                Puppy Name
+              </label>
+              <div className="mt-1 relative" ref={puppyDropdownRef}>
+                <input
+                  type="text"
+                  id="puppyName"
+                  name="puppyName"
+                  value={puppyName}
+                  onChange={(e) => setPuppyName(e.target.value)}
+                  placeholder="Enter puppy's name"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md sm:text-sm border-gray-300"
+                  onClick={() => {
+                    // Show owner's puppies when clicking on the input if owner is selected
+                    if (ownerName.trim() !== "" && !showPuppyDropdown) {
+                      const exactOwnerMatch = Array.from(new Set(puppies.map(p => p.ownerName)))
+                        .find(name => name.toLowerCase() === ownerName.toLowerCase());
+
+                      if (exactOwnerMatch) {
+                        const ownerPuppies = puppies.filter(p =>
+                          p.ownerName.toLowerCase() === exactOwnerMatch.toLowerCase()
+                        );
+
+                        if (ownerPuppies.length > 0) {
+                          setFilteredPuppies(ownerPuppies);
+                          setShowPuppyDropdown(true);
+                        }
+                      }
+                    }
+                  }}
+                />
+                {showPuppyDropdown && filteredPuppies.length > 0 && (
+                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto max-h-60">
+                    {ownerName.trim() !== "" && filteredPuppies.every(p => p.ownerName.toLowerCase() === ownerName.toLowerCase()) && (
+                      <div className="px-3 py-1 text-xs text-purple-600 font-medium border-b border-gray-100">
+                        Puppies for {ownerName}
+                      </div>
+                    )}
+                    {filteredPuppies.map((puppy) => (
+                      <div
+                        key={puppy.id}
+                        onClick={() => handleSelectPuppy(puppy)}
+                        className="cursor-pointer hover:bg-purple-50 py-2 px-3"
+                      >
+                        <div className="font-medium">{puppy.name}</div>
+                        <div className="text-sm text-gray-500">{puppy.ownerName}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {isCreatingNewPuppy && puppyName.trim() !== "" && (
+                <p className="mt-1 text-sm text-purple-600">
+                  New puppy will be created
+                </p>
               )}
-              {!fetchingPuppies && puppies.length === 0 && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500">No puppies found. Please add a puppy first.</p>
-                  <a
-                    href="/add-puppy"
-                    className="mt-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                  >
-                    Add Puppy
-                  </a>
-                </div>
+              {selectedPuppy && (
+                <p className="mt-1 text-sm text-green-600">
+                  Using existing puppy
+                </p>
               )}
             </div>
 
@@ -177,7 +394,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   name="serviceRequired"
                   value={serviceRequired}
                   onChange={(e) => setServiceRequired(e.target.value)}
-                  className="focus:ring-purple-500 focus:border-purple-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md sm:text-sm border-gray-300"
                 >
                   <option value="">Select a service</option>
                   {serviceOptions.map((service) => (
@@ -189,7 +406,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
               </div>
             </div>
 
-            <div className="md:col-span-2">
+            <div>
               <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
                 Notes (Optional)
               </label>
@@ -201,7 +418,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Any special requirements or notes"
-                  className="focus:ring-purple-500 focus:border-purple-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md sm:text-sm border-gray-300"
                 />
               </div>
             </div>
@@ -209,7 +426,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
             <div className="md:col-span-2 flex justify-end">
               <button
                 type="submit"
-                disabled={loading || fetchingPuppies || puppies.length === 0}
+                disabled={loading || !puppyName.trim() || !ownerName.trim() || !serviceRequired}
                 className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:bg-purple-300"
               >
                 {loading ? (
