@@ -28,6 +28,7 @@ model WaitingListEntry {
   puppyId         Int
   serviceRequired String
   arrivalTime     DateTime    @default(now())
+  serviceTime     DateTime?   // Time when the puppy was serviced
   position        Int
   serviced        Boolean     @default(false)
   createdAt       DateTime    @default(now())

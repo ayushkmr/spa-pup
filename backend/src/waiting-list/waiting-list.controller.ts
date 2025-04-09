@@ -2,6 +2,7 @@ import { Controller, Post, Get, Body, Param, Patch, Query } from '@nestjs/common
 import { WaitingListService } from './waiting-list.service';
 import { AddEntryDto } from './dto/add-entry.dto';
 import { ReorderEntriesDto } from './dto/reorder-entries.dto';
+import { StatisticsQueryDto, StatisticsResponseDto } from './dto/statistics.dto';
 
 @Controller('waiting-list')
 export class WaitingListController {
@@ -58,5 +59,10 @@ export class WaitingListController {
   @Get('search')
   async searchWaitingListHistory(@Query('q') query: string) {
     return this.waitingListService.searchWaitingListHistory(query);
+  }
+
+  @Get('statistics')
+  async getStatistics(@Query() query: StatisticsQueryDto): Promise<StatisticsResponseDto> {
+    return this.waitingListService.getStatistics(query.startDate, query.endDate);
   }
 }
