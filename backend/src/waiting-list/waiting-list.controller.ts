@@ -28,7 +28,10 @@ export class WaitingListController {
 
   @Patch('reorder')
   async reorderEntries(@Body() reorderEntriesDto: ReorderEntriesDto) {
-    return this.waitingListService.reorderEntries(reorderEntriesDto.entryOrder);
+    console.log('Reordering entries:', reorderEntriesDto.entryOrder);
+    const result = await this.waitingListService.reorderEntries(reorderEntriesDto.entryOrder);
+    console.log('Reordering result:', result);
+    return result;
   }
 
   @Patch('mark-serviced/:entryId')

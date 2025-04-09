@@ -1,8 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { waitingListApi } from "@/lib/api";
+import { waitingListApi, puppyApi } from "@/lib/api";
 import { WaitingList, WaitingListEntry } from "@/types";
+
+// Expose API for debugging
+if (typeof window !== 'undefined') {
+  (window as any).waitingListApi = waitingListApi;
+  (window as any).puppyApi = puppyApi;
+  console.log('API client exposed for debugging');
+}
 
 export default function Home() {
   const [waitingList, setWaitingList] = useState<WaitingList | null>(null);
