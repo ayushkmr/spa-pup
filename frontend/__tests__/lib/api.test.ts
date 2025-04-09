@@ -114,6 +114,32 @@ describe('API Client', () => {
       expect(result.data).toEqual(createdEntry);
     });
 
+    it('addEntry should add an entry with notes to the waiting list', async () => {
+      const newEntry = {
+        puppyId: 1,
+        serviceRequired: 'Bath & Dry',
+        notes: 'Sensitive skin, use hypoallergenic shampoo',
+      };
+
+      const createdEntry = {
+        id: 1,
+        position: 1,
+        puppy: { id: 1, name: 'Max', ownerName: 'John Doe' },
+        serviceRequired: 'Bath & Dry',
+        notes: 'Sensitive skin, use hypoallergenic shampoo',
+        arrivalTime: '2025-04-09T10:00:00Z',
+        serviced: false,
+      };
+
+      (waitingListApi.addEntry as jest.Mock).mockResolvedValueOnce({ data: createdEntry });
+
+      const result = await waitingListApi.addEntry(newEntry);
+
+      expect(waitingListApi.addEntry).toHaveBeenCalledWith(newEntry);
+      expect(result.data).toEqual(createdEntry);
+      expect(result.data.notes).toBe('Sensitive skin, use hypoallergenic shampoo');
+    });
+
     it('markServiced should mark an entry as serviced', async () => {
       const updatedEntry = {
         id: 1,

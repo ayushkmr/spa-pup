@@ -40,6 +40,7 @@ describe('TabbedWaitingList', () => {
       position: 2,
       puppy: { id: 2, name: 'Bella', ownerName: 'Jane Smith' },
       serviceRequired: 'Full Grooming',
+      notes: 'Sensitive skin',
       arrivalTime: '2025-04-09T10:30:00Z',
       serviced: false,
     },
@@ -48,6 +49,7 @@ describe('TabbedWaitingList', () => {
       position: 3,
       puppy: { id: 3, name: 'Charlie', ownerName: 'Bob Johnson' },
       serviceRequired: 'Nail Trimming',
+      notes: 'Be gentle with back paws',
       arrivalTime: '2025-04-09T09:30:00Z',
       serviced: true,
     },
@@ -72,21 +74,23 @@ describe('TabbedWaitingList', () => {
     );
 
     // Check if the tabs are rendered
-    expect(screen.getByRole('button', { name: 'Waiting' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Serviced' })).toBeInTheDocument();
+    const waitingTab = screen.getAllByRole('button').find(button => button.textContent?.includes('Waiting'));
+    const servicedTab = screen.getAllByRole('button').find(button => button.textContent?.includes('Serviced'));
+    expect(waitingTab).toBeInTheDocument();
+    expect(servicedTab).toBeInTheDocument();
 
     // Check if the waiting entries are rendered
-    expect(screen.getByText('Max')).toBeInTheDocument();
-    expect(screen.getByText('Bella')).toBeInTheDocument();
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-    expect(screen.getByText('Bath & Dry')).toBeInTheDocument();
-    expect(screen.getByText('Full Grooming')).toBeInTheDocument();
+    expect(screen.getAllByText('Max')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Bella')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('John Doe')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Jane Smith')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Bath & Dry')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Full Grooming')[0]).toBeInTheDocument();
 
     // Check if the serviced entry is not rendered in the waiting tab
-    expect(screen.queryByText('Charlie')).not.toBeInTheDocument();
-    expect(screen.queryByText('Bob Johnson')).not.toBeInTheDocument();
-    expect(screen.queryByText('Nail Trimming')).not.toBeInTheDocument();
+    expect(screen.queryAllByText('Charlie').length).toBe(0);
+    expect(screen.queryAllByText('Bob Johnson').length).toBe(0);
+    expect(screen.queryAllByText('Nail Trimming').length).toBe(0);
   });
 
   it('switches to the serviced tab when clicked', () => {
@@ -101,16 +105,17 @@ describe('TabbedWaitingList', () => {
     );
 
     // Click on the serviced tab
-    fireEvent.click(screen.getByText('Serviced'));
+    const servicedTab = screen.getAllByRole('button').find(button => button.textContent?.includes('Serviced'));
+    fireEvent.click(servicedTab);
 
     // Check if the serviced entry is rendered
-    expect(screen.getByText('Charlie')).toBeInTheDocument();
-    expect(screen.getByText('Bob Johnson')).toBeInTheDocument();
-    expect(screen.getByText('Nail Trimming')).toBeInTheDocument();
+    expect(screen.getAllByText('Charlie')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Bob Johnson')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Nail Trimming')[0]).toBeInTheDocument();
 
     // Check if the waiting entries are not rendered in the serviced tab
-    expect(screen.queryByText('Max')).not.toBeInTheDocument();
-    expect(screen.queryByText('Bella')).not.toBeInTheDocument();
+    expect(screen.queryAllByText('Max').length).toBe(0);
+    expect(screen.queryAllByText('Bella').length).toBe(0);
   });
 
   it('calls onMarkServiced when the "Mark Serviced" button is clicked', () => {
@@ -158,9 +163,32 @@ describe('TabbedWaitingList', () => {
     );
 
     // Click on the serviced tab
-    fireEvent.click(screen.getByText('Serviced'));
+    const servicedTab = screen.getAllByRole('button').find(button => button.textContent?.includes('Serviced'));
+    fireEvent.click(servicedTab);
 
     // Check if the "No serviced puppies yet" message is displayed
     expect(screen.getByText('No serviced puppies yet')).toBeInTheDocument();
+  });
+
+  it('displays notes for entries that have them', () => {
+    render(
+      <TabbedWaitingList
+        entries={mockEntries}
+        onReorder={mockOnReorder}
+        onMarkServiced={mockOnMarkServiced}
+        reordering={false}
+        formatTime={mockFormatTime}
+      />
+    );
+
+    // Check if notes for waiting entries are displayed
+    expect(screen.getAllByText('Sensitive skin')[0]).toBeInTheDocument();
+
+    // Click on the serviced tab to check notes for serviced entries
+    const servicedTab = screen.getAllByRole('button').find(button => button.textContent?.includes('Serviced'));
+    fireEvent.click(servicedTab);
+
+    // Check if notes for serviced entries are displayed
+    expect(screen.getAllByText('Be gentle with back paws')[0]).toBeInTheDocument();
   });
 });

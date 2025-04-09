@@ -109,6 +109,36 @@ describe('Waiting List API Integration Tests', () => {
       expect(response).toBeDefined();
     });
 
+    it('should handle adding a puppy with notes to the waiting list', async () => {
+      const entryData = {
+        puppyId: puppy.id,
+        serviceRequired: 'Bath & Dry',
+        notes: 'Needs special shampoo',
+      };
+
+      // Ensure the waiting list for today exists
+      await testClient.post('/waiting-list/create-today');
+
+      const response = await testClient
+        .post('/waiting-list/add-entry')
+        .send(entryData)
+        .expect(201);
+
+      // Verify the entry was created with notes
+      expect(response.body).toHaveProperty('id');
+      expect(response.body.puppyId).toBe(puppy.id);
+      expect(response.body.serviceRequired).toBe('Bath & Dry');
+      expect(response.body.notes).toBe('Needs special shampoo');
+
+      // Verify the entry exists in the database with notes
+      const createdEntry = await prismaService.waitingListEntry.findUnique({
+        where: { id: response.body.id },
+      });
+
+      expect(createdEntry).not.toBeNull();
+      expect(createdEntry?.notes).toBe('Needs special shampoo');
+    });
+
     it('should return 400 for invalid entry data', async () => {
       const invalidEntryData = {
         // Missing required fields

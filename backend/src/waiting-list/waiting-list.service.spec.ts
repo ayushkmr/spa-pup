@@ -171,6 +171,65 @@ describe('WaitingListService', () => {
 
       expect(result).toEqual(mockCreatedEntry);
     });
+
+    it('should add a new entry with notes to the waiting list', async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Mock the waiting list
+      const mockWaitingList = {
+        id: 1,
+        date: today,
+      };
+
+      // Mock the aggregate result for max position
+      const mockMaxPosition = {
+        _max: { position: 2 },
+      };
+
+      // Mock the created entry with notes
+      const mockCreatedEntry = {
+        id: 3,
+        position: 3,
+        puppyId: 1,
+        waitingListId: 1,
+        serviceRequired: 'Bath & Dry',
+        notes: 'Allergic to certain shampoos',
+        arrivalTime: expect.any(Date),
+        serviced: false,
+      };
+
+      mockPrismaService.waitingList.findUnique.mockResolvedValueOnce(mockWaitingList);
+      mockPrismaService.waitingListEntry.aggregate.mockResolvedValueOnce(mockMaxPosition);
+      mockPrismaService.waitingListEntry.create.mockResolvedValueOnce(mockCreatedEntry);
+
+      const result = await service.addEntryToTodayList(
+        1,
+        'Bath & Dry',
+        undefined,
+        'Allergic to certain shampoos'
+      );
+
+      expect(mockPrismaService.waitingList.findUnique).toHaveBeenCalledWith({
+        where: { date: today },
+      });
+      expect(mockPrismaService.waitingListEntry.aggregate).toHaveBeenCalledWith({
+        where: { waitingListId: 1 },
+        _max: { position: true },
+      });
+      expect(mockPrismaService.waitingListEntry.create).toHaveBeenCalledWith({
+        data: {
+          puppyId: 1,
+          waitingListId: 1,
+          serviceRequired: 'Bath & Dry',
+          notes: 'Allergic to certain shampoos',
+          position: 3,
+          arrivalTime: expect.any(Date),
+        },
+      });
+
+      expect(result).toEqual(mockCreatedEntry);
+    });
   });
 
   describe('markEntryServiced', () => {
