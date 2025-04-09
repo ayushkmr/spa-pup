@@ -123,20 +123,20 @@ export default function TabbedWaitingList({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 #
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status Puppy & Owner
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Service
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Time
               </th>
               {activeTab === 'waiting' && (
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               )}
@@ -159,19 +159,19 @@ export default function TabbedWaitingList({
                       ${!reordering ? 'cursor-grab' : ''}
                     `}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex items-center">
                         <span className="mr-2">{entry.position}</span>
                         {!reordering && (
-                          <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
                           </svg>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 mr-3">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 mr-2">
                           Waiting
                         </span>
                         <div>
@@ -180,13 +180,13 @@ export default function TabbedWaitingList({
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                       {formatTime(entry.arrivalTime)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => onMarkServiced(entry.id)}
                         className="text-purple-600 hover:text-purple-900"
@@ -198,9 +198,9 @@ export default function TabbedWaitingList({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center">
+                  <td colSpan={5} className="px-4 py-8 text-center">
                     <div className="text-center">
-                      <div className="text-6xl mb-4">🐶</div>
+                      <div className="text-4xl mb-3">🐶</div>
                       <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">No puppies in the queue yet</h3>
                       <p className="text-sm text-gray-500">Add a puppy to get started</p>
                     </div>
@@ -211,12 +211,12 @@ export default function TabbedWaitingList({
               servicedEntries.length > 0 ? (
                 servicedEntries.map((entry) => (
                   <tr key={entry.id} className="bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                       {entry.position}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 mr-3">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 mr-2">
                           Serviced
                         </span>
                         <div>
@@ -225,19 +225,19 @@ export default function TabbedWaitingList({
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                       {formatTime(entry.arrivalTime)}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center">
+                  <td colSpan={4} className="px-4 py-8 text-center">
                     <div className="text-center">
-                      <div className="text-6xl mb-4">🐾</div>
+                      <div className="text-4xl mb-3">🐾</div>
                       <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">No serviced puppies yet</h3>
                       <p className="text-sm text-gray-500">Puppies that have been serviced will appear here</p>
                     </div>

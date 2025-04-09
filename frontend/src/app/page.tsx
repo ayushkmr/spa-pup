@@ -115,25 +115,23 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      {/* Puppy Gallery Section */}
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+      {/* Puppy Gallery Section - Smaller Size */}
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg p-4">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Our Pampered Pups</h3>
         <PuppyGallery className="mt-2" />
       </div>
 
-      {/* Today's Queue Section with Add Form */}
+      {/* Today's Queue Section */}
       <div>
-        <div className="mb-6">
+        <div className="mb-4">
           <h2 className="text-2xl font-bold text-gray-900">Today's Puppy Queue</h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-base text-gray-500">
             {waitingList ? formatDate(waitingList.date) : 'No date available'}
           </p>
         </div>
-        
-        {/* Add to Queue Form */}
-        <AddToQueueForm onSuccess={fetchTodayList} />
-        
+
         {/* Tabbed Waiting/Serviced List */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg mt-6">
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
           {waitingList ? (
             <TabbedWaitingList
               entries={waitingList.entries}
@@ -146,12 +144,15 @@ export default function Home() {
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🐶</div>
               <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">No puppies in the queue yet</h3>
-              <p className="text-sm text-gray-500">Add a puppy using the form above</p>
+              <p className="text-sm text-gray-500">Add a puppy using the form below</p>
             </div>
           )}
         </div>
+
+        {/* Add to Queue Form */}
+        <AddToQueueForm onSuccess={fetchTodayList} />
       </div>
-      
+
       {/* Quote Section */}
       <div className="text-center py-6">
         <p className="text-sm text-gray-600 italic">"A dog will teach you unconditional love. If you can have that in your life, things won't be too bad." 🐾</p>

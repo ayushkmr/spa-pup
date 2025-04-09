@@ -99,8 +99,8 @@ const PuppyGallery: React.FC<PuppyGalleryProps> = ({ className }) => {
               key={index}
               className={`snap-center shrink-0 first:pl-4 last:pr-4 transition-all duration-300 ${index === currentIndex ? 'scale-100 opacity-100' : 'scale-95 opacity-80'}`}
             >
-              <div className="w-80 md:w-96 overflow-hidden rounded-lg bg-white border shadow-md">
-                <div className="relative h-64 w-full">
+              <div className="w-60 md:w-72 overflow-hidden rounded-lg bg-white border shadow-md">
+                <div className="relative h-48 w-full">
                   <img
                     src={image.src}
                     alt={image.alt}
