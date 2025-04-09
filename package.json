@@ -1,0 +1,31 @@
+{
+  "name": "spa-pup",
+  "version": "1.0.0",
+  "description": "A full-stack web application to manage daily puppy grooming appointments for **Puppy Spa**, replacing their physical logbook with a digital solution.",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "browser:screenshot": "node browser-tools/screenshot-app.js",
+    "browser:element-screenshot": "node browser-tools/element-screenshots.js",
+    "browser:form-fill": "node browser-tools/form-filler.js",
+    "browser:drag-test": "node browser-tools/test-drag-drop.js",
+    "browser:pdf-report": "node browser-tools/generate-pdf-report.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayushkmr/spa-pup.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ayushkmr/spa-pup/issues"
+  },
+  "homepage": "https://github.com/ayushkmr/spa-pup#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.14.0"
+  }
+}
