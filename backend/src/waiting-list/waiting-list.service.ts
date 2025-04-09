@@ -80,4 +80,52 @@ export class WaitingListService {
       },
     });
   }
+
+  async getAllLists() {
+    return this.prisma.waitingList.findMany({
+      orderBy: { date: 'desc' },
+      include: {
+        entries: {
+          orderBy: { position: 'asc' },
+          include: { puppy: true },
+        },
+        _count: {
+          select: { entries: true },
+        },
+      },
+    });
+  }
+
+  async searchWaitingListHistory(query: string) {
+    // Find puppies matching the query
+    const puppies = await this.prisma.puppy.findMany({
+      where: {
+        OR: [
+          { name: { contains: query, mode: 'insensitive' } },
+          { ownerName: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+      select: { id: true },
+    });
+
+    const puppyIds = puppies.map((puppy) => puppy.id);
+
+    // Find entries for these puppies
+    return this.prisma.waitingListEntry.findMany({
+      where: {
+        OR: [
+          { puppyId: { in: puppyIds } },
+          { serviceRequired: { contains: query, mode: 'insensitive' } },
+        ],
+      },
+      include: {
+        puppy: true,
+        waitingList: true,
+      },
+      orderBy: [
+        { waitingList: { date: 'desc' } },
+        { position: 'asc' },
+      ],
+    });
+  }
 }

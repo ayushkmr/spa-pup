@@ -1,5 +1,7 @@
-import { Controller, Post, Get, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, Query } from '@nestjs/common';
 import { WaitingListService } from './waiting-list.service';
+import { AddEntryDto } from './dto/add-entry.dto';
+import { ReorderEntriesDto } from './dto/reorder-entries.dto';
 
 @Controller('waiting-list')
 export class WaitingListController {
@@ -11,10 +13,12 @@ export class WaitingListController {
   }
 
   @Post('add-entry')
-  async addEntry(
-    @Body() body: { puppyId: number; serviceRequired: string; arrivalTime?: Date }
-  ) {
-    return this.waitingListService.addEntryToTodayList(body.puppyId, body.serviceRequired, body.arrivalTime);
+  async addEntry(@Body() addEntryDto: AddEntryDto) {
+    return this.waitingListService.addEntryToTodayList(
+      addEntryDto.puppyId,
+      addEntryDto.serviceRequired,
+      addEntryDto.arrivalTime
+    );
   }
 
   @Get('today')
@@ -23,8 +27,8 @@ export class WaitingListController {
   }
 
   @Patch('reorder')
-  async reorderEntries(@Body() body: { entryOrder: number[] }) {
-    return this.waitingListService.reorderEntries(body.entryOrder);
+  async reorderEntries(@Body() reorderEntriesDto: ReorderEntriesDto) {
+    return this.waitingListService.reorderEntries(reorderEntriesDto.entryOrder);
   }
 
   @Patch('mark-serviced/:entryId')
@@ -35,5 +39,15 @@ export class WaitingListController {
   @Get('history/:date')
   async getListByDate(@Param('date') date: string) {
     return this.waitingListService.getListByDate(new Date(date));
+  }
+
+  @Get('all')
+  async getAllLists() {
+    return this.waitingListService.getAllLists();
+  }
+
+  @Get('search')
+  async searchWaitingListHistory(@Query('q') query: string) {
+    return this.waitingListService.searchWaitingListHistory(query);
   }
 }

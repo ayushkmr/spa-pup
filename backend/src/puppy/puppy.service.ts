@@ -21,4 +21,10 @@ export class PuppyService {
       },
     });
   }
+
+  async getAllPuppies() {
+    return this.prisma.puppy.findMany({
+      orderBy: { name: 'asc' },
+    });
+  }
 }
