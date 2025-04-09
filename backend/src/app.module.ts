@@ -4,11 +4,11 @@ import { AppService } from './app.service';
 import { WaitingListModule } from './waiting-list/waiting-list.module';
 import { PuppyModule } from './puppy/puppy.module';
 
-import { PrismaService } from './prisma.service';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [WaitingListModule, PuppyModule],
+  imports: [WaitingListModule, PuppyModule, PrismaModule],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService],
 })
 export class AppModule {}
