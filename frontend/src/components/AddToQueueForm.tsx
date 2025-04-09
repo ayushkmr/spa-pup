@@ -318,6 +318,11 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   </div>
                 )}
               </div>
+              {ownerName.trim() !== "" && (
+                <p className="mt-1 text-sm font-medium" style={{ color: Array.from(new Set(puppies.map(p => p.ownerName))).some(name => name.toLowerCase() === ownerName.toLowerCase()) ? '#16a34a' : '#9333ea' }}>
+                  {Array.from(new Set(puppies.map(p => p.ownerName))).some(name => name.toLowerCase() === ownerName.toLowerCase()) ? "Existing owner" : "New owner will be created"}
+                </p>
+              )}
             </div>
 
             <div>
@@ -372,14 +377,9 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   </div>
                 )}
               </div>
-              {isCreatingNewPuppy && puppyName.trim() !== "" && (
-                <p className="mt-1 text-sm text-purple-600">
-                  New puppy will be created
-                </p>
-              )}
-              {selectedPuppy && (
-                <p className="mt-1 text-sm text-green-600">
-                  Using existing puppy
+              {puppyName.trim() !== "" && (
+                <p className="mt-1 text-sm font-medium" style={{ color: isCreatingNewPuppy ? '#9333ea' : '#16a34a' }}>
+                  {isCreatingNewPuppy ? "New puppy will be created" : "Using existing puppy"}
                 </p>
               )}
             </div>
