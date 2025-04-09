@@ -44,6 +44,11 @@ Puppy Spa operates as a walk-in-only service where puppy owners sign their puppi
 - **Cypress** - End-to-end testing
 - **Supertest** - API testing
 
+### Deployment
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
+- **Node.js** - Runtime for the frontend in development mode
+
 ---
 
 ## 🏗️ Architecture
@@ -151,8 +156,65 @@ See [`backend/prisma/schema.prisma`](backend/prisma/schema.prisma) for details.
 - Node.js 18+ and npm/yarn
 - PostgreSQL 14+
 - Git
+- Docker and Docker Compose (for containerized setup)
 
-### Backend Setup
+### Option 1: Docker Setup (Recommended)
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/yourusername/puppy-spa.git
+cd puppy-spa
+```
+
+2. **Start the application using Docker Compose**
+
+```bash
+docker-compose up -d
+```
+
+This will:
+- Start a PostgreSQL database container
+- Start a PGAdmin container for database management
+- Build and start the NestJS backend container
+- Build and start the Next.js frontend container
+- Run database migrations automatically
+
+3. **Access the application**
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3005
+- PGAdmin (Database Management): http://localhost:5050
+  - Email: admin@puppyspa.com
+  - Password: admin
+
+4. **View logs**
+
+```bash
+# View all logs
+docker-compose logs
+
+# View specific service logs
+docker-compose logs frontend
+docker-compose logs backend
+```
+
+5. **Stop the application**
+
+```bash
+docker-compose down
+```
+
+6. **Rebuild containers after code changes**
+
+```bash
+docker-compose build
+docker-compose up -d
+```
+
+### Option 2: Manual Setup
+
+#### Backend Setup
 
 1. **Clone the repository**
 
@@ -192,7 +254,7 @@ npm run start:dev
 
 The backend will be available at http://localhost:3005
 
-### Frontend Setup
+#### Frontend Setup
 
 1. **Install frontend dependencies**
 
@@ -214,7 +276,7 @@ echo "NEXT_PUBLIC_API_URL=http://localhost:3005" > .env.local
 npm run dev
 ```
 
-The frontend will be available at http://localhost:3002
+The frontend will be available at http://localhost:3000
 
 ---
 
@@ -256,7 +318,14 @@ The frontend will be available at http://localhost:3002
    cd frontend && npm run cypress:headless
    ```
 
-   Or to open the Cypress UI:
+### Docker Development
+
+1. **Modify Docker configuration** in `docker-compose.yml`, `backend/Dockerfile`, or `frontend/Dockerfile`
+2. **Rebuild containers** with `docker-compose build`
+3. **Restart services** with `docker-compose up -d`
+4. **View logs** with `docker-compose logs`
+
+### Cypress Testing
    ```bash
    cd frontend && npm run cypress
    ```
@@ -313,6 +382,8 @@ See [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) for detailed system design documentatio
 - **Comprehensive Testing**: Added unit, integration, and E2E tests
 - **Type Safety**: Full TypeScript implementation
 - **API Integration**: Robust API client with error handling
+- **Containerization**: Docker and Docker Compose setup for easy deployment
+- **Development Mode**: Next.js development server for hot reloading during development
 
 ---
 
