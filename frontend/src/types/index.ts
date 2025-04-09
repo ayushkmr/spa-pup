@@ -10,6 +10,7 @@ export interface WaitingListEntry {
   waitingListId: number;
   puppyId: number;
   serviceRequired: string;
+  notes?: string;
   arrivalTime: string;
   position: number;
   serviced: boolean;

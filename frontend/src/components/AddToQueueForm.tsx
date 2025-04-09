@@ -213,7 +213,8 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
       // Add entry to the list
       await waitingListApi.addEntry({
         puppyId,
-        serviceRequired
+        serviceRequired,
+        notes: notes.trim() || undefined
       });
 
       // Reset form

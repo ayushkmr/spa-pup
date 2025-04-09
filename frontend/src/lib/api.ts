@@ -45,7 +45,7 @@ export const waitingListApi = {
   createToday: () =>
     api.post('/waiting-list/create-today'),
 
-  addEntry: (data: { puppyId: number; serviceRequired: string; arrivalTime?: Date }) =>
+  addEntry: (data: { puppyId: number; serviceRequired: string; notes?: string; arrivalTime?: Date }) =>
     api.post('/waiting-list/add-entry', data),
 
   getToday: () =>

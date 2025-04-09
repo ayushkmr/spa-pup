@@ -183,6 +183,7 @@ export default function TabbedWaitingList({
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
+                      {entry.notes && <div className="text-xs text-gray-500 mt-1 italic">{entry.notes}</div>}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                       {formatTime(entry.arrivalTime)}
@@ -228,6 +229,7 @@ export default function TabbedWaitingList({
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
+                      {entry.notes && <div className="text-xs text-gray-500 mt-1 italic">{entry.notes}</div>}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                       {formatTime(entry.arrivalTime)}
@@ -293,6 +295,12 @@ export default function TabbedWaitingList({
                       <span className="text-gray-500">Arrival:</span>
                       <p className="font-medium text-gray-900">{formatTime(entry.arrivalTime)}</p>
                     </div>
+                    {entry.notes && (
+                      <div className="col-span-2 mt-1">
+                        <span className="text-gray-500">Notes:</span>
+                        <p className="font-medium text-gray-900 italic">{entry.notes}</p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-3 flex justify-end">
@@ -346,6 +354,12 @@ export default function TabbedWaitingList({
                       <span className="text-gray-500">Completed:</span>
                       <p className="font-medium text-gray-900">{formatTime(entry.serviceTime || entry.arrivalTime)}</p>
                     </div>
+                    {entry.notes && (
+                      <div className="col-span-2 mt-1">
+                        <span className="text-gray-500">Notes:</span>
+                        <p className="font-medium text-gray-900 italic">{entry.notes}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

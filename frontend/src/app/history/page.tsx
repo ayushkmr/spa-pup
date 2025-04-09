@@ -17,10 +17,10 @@ export default function History() {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await waitingListApi.getAll();
         setWaitingLists(response.data);
-        
+
         // Select the most recent list by default
         if (response.data.length > 0) {
           setSelectedDate(response.data[0].date);
@@ -116,7 +116,7 @@ export default function History() {
           View past waiting lists
         </p>
       </div>
-      
+
       <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
         <div className="mb-6">
           <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
@@ -136,13 +136,13 @@ export default function History() {
             ))}
           </select>
         </div>
-        
+
         {selectedList && (
           <div className="mt-6">
             <h4 className="text-md font-medium text-gray-900 mb-4">
               {formatDate(selectedList.date)}
             </h4>
-            
+
             {selectedList.entries.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -182,6 +182,7 @@ export default function History() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
+                          {entry.notes && <div className="text-xs text-gray-500 mt-1 italic">{entry.notes}</div>}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatTime(entry.arrivalTime)}

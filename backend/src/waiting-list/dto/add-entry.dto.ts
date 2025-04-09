@@ -11,6 +11,10 @@ export class AddEntryDto {
   serviceRequired: string;
 
   @IsOptional()
+  @IsString()
+  notes?: string;
+
+  @IsOptional()
   @IsDate()
   @Type(() => Date)
   arrivalTime?: Date;
