@@ -29,9 +29,15 @@ export class WaitingListController {
   @Patch('reorder')
   async reorderEntries(@Body() reorderEntriesDto: ReorderEntriesDto) {
     console.log('Reordering entries:', reorderEntriesDto.entryOrder);
-    const result = await this.waitingListService.reorderEntries(reorderEntriesDto.entryOrder);
-    console.log('Reordering result:', result);
-    return result;
+    try {
+      const result = await this.waitingListService.reorderEntries(reorderEntriesDto.entryOrder);
+      console.log('Reordering successful. New order:',
+        result.map(entry => `ID: ${entry.id}, Position: ${entry.position}, Puppy: ${entry.puppyId}`));
+      return result;
+    } catch (error) {
+      console.error('Error reordering entries:', error);
+      throw error;
+    }
   }
 
   @Patch('mark-serviced/:entryId')
