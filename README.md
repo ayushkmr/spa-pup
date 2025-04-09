@@ -1,4 +1,4 @@
-# Puppy Spa Waiting List App
+# 🐶 Puppy Spa Waiting List App
 
 A full-stack web application to manage daily puppy grooming appointments for **Puppy Spa**, replacing their physical logbook with a digital solution.
 
@@ -14,6 +14,8 @@ Puppy Spa operates as a walk-in-only service where puppy owners sign their puppi
 - **Service tracking** - Mark puppies as serviced
 - **Historical reporting** - View past waiting lists
 - **Search capabilities** - Find specific puppies across all records
+- **Pampered Pups Gallery** - Showcase beautifully groomed puppies
+- **Statistics Dashboard** - View service metrics and trends
 
 ---
 
@@ -24,8 +26,10 @@ Puppy Spa operates as a walk-in-only service where puppy owners sign their puppi
 - **React 19** - UI library
 - **TypeScript** - Type safety and developer experience
 - **Tailwind CSS 4** - Utility-first styling
-- **React Query** (planned) - Data fetching and caching
-- **React DnD** (planned) - Drag and drop functionality
+- **Axios** - HTTP client for API requests
+- **React Beautiful DnD** - Drag and drop functionality for reordering
+- **React Hook Form** - Form validation and handling
+- **React Icons** - Icon library
 
 ### Backend
 - **NestJS 11** - TypeScript-based Node.js framework
@@ -33,6 +37,12 @@ Puppy Spa operates as a walk-in-only service where puppy owners sign their puppi
 - **Prisma 6** - Type-safe ORM
 - **Jest** - Testing framework
 - **RESTful API** - JSON-based communication
+
+### Testing
+- **Jest** - Unit and integration testing
+- **React Testing Library** - Component testing
+- **Cypress** - End-to-end testing
+- **Supertest** - API testing
 
 ---
 
@@ -180,7 +190,7 @@ npx prisma migrate dev --name init
 npm run start:dev
 ```
 
-The backend will be available at http://localhost:3001
+The backend will be available at http://localhost:3005
 
 ### Frontend Setup
 
@@ -188,14 +198,14 @@ The backend will be available at http://localhost:3001
 
 ```bash
 cd ../frontend
-npm install
+npm install --legacy-peer-deps
 ```
 
 2. **Configure environment variables**
 
 ```bash
 # Create a .env.local file
-echo "NEXT_PUBLIC_API_URL=http://localhost:3001" > .env.local
+echo "NEXT_PUBLIC_API_URL=http://localhost:3005" > .env.local
 ```
 
 3. **Start the frontend development server**
@@ -204,7 +214,7 @@ echo "NEXT_PUBLIC_API_URL=http://localhost:3001" > .env.local
 npm run dev
 ```
 
-The frontend will be available at http://localhost:3000
+The frontend will be available at http://localhost:3002
 
 ---
 
@@ -226,8 +236,30 @@ The frontend will be available at http://localhost:3000
 
 ### Testing
 
-1. **Run backend tests** with `cd backend && npm test`
-2. **Run frontend tests** with `cd frontend && npm test`
+1. **Run backend unit tests**
+   ```bash
+   cd backend && npm test
+   ```
+
+2. **Run backend integration tests**
+   ```bash
+   cd backend && npm run test:integration
+   ```
+
+3. **Run frontend unit tests**
+   ```bash
+   cd frontend && npx jest
+   ```
+
+4. **Run frontend end-to-end tests**
+   ```bash
+   cd frontend && npm run cypress:headless
+   ```
+
+   Or to open the Cypress UI:
+   ```bash
+   cd frontend && npm run cypress
+   ```
 
 ---
 
@@ -239,10 +271,14 @@ The frontend will be available at http://localhost:3000
 - **API Design**: Follow RESTful principles
 - **Error Handling**: Provide meaningful error messages
 - **Validation**: Validate all inputs on both client and server
-- **Testing**: Write tests for critical functionality
+- **Comprehensive Testing**: Multiple layers of testing (unit, integration, E2E)
 - **Documentation**: Keep code and API documentation up-to-date
 - **Environment Variables**: Use for configuration
 - **Code Formatting**: Consistent styling with ESLint and Prettier
+- **Component-Based Design**: Reusable UI components
+- **Responsive Design**: Mobile-friendly interface
+- **Accessibility**: Ensure the application is usable by everyone
+- **Performance Optimization**: Minimize loading times and optimize rendering
 
 ---
 
@@ -251,6 +287,32 @@ The frontend will be available at http://localhost:3000
 See [TASKS.md](TASKS.md) for detailed user stories, acceptance criteria, and implementation tasks.
 
 See [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) for detailed system design documentation.
+
+---
+
+## ✨ Implemented Features
+
+### Core Features
+- **Today's Queue Management**: Create and manage the daily waiting list
+- **Puppy Registration**: Add new puppies with owner information
+- **Service Tracking**: Mark puppies as serviced when grooming is complete
+- **Queue Reordering**: Drag and drop to reorder the waiting list
+- **Tabbed Interface**: Easily switch between waiting and serviced puppies
+- **Search Functionality**: Find puppies by name, owner, or service type
+- **History View**: Access past waiting lists and entries
+
+### UI Enhancements
+- **Pampered Pups Gallery**: Showcase beautifully groomed puppies at the bottom of the page
+- **Responsive Design**: Works on desktop and mobile devices
+- **Form Validation**: Immediate feedback on form inputs
+- **Loading States**: Visual indicators during data fetching
+- **Error Handling**: User-friendly error messages
+
+### Technical Improvements
+- **PostgreSQL Migration**: Moved from MongoDB to PostgreSQL for better relational data handling
+- **Comprehensive Testing**: Added unit, integration, and E2E tests
+- **Type Safety**: Full TypeScript implementation
+- **API Integration**: Robust API client with error handling
 
 ---
 
