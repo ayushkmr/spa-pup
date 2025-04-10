@@ -89,6 +89,12 @@ describe('Puppy API Integration Tests', () => {
     });
 
     it('should search puppies by name', async () => {
+      // First create a puppy named Max
+      await testClient
+        .post('/puppy/create')
+        .send({ name: 'Max', ownerName: 'Test Owner' })
+        .expect(201);
+
       const response = await testClient
         .get('/puppy/search?q=Max')
         .expect(200);

@@ -12,8 +12,9 @@
     "test:coverage": "jest --coverage",
     "cypress": "cypress open",
     "cypress:headless": "cypress run",
-    "e2e": "start-server-and-test dev http://localhost:3002 cypress",
-    "e2e:headless": "start-server-and-test dev http://localhost:3002 cypress:headless"
+    "e2e": "start-server-and-test dev:test http://localhost:3002 cypress",
+    "e2e:headless": "start-server-and-test dev:test http://localhost:3002 cypress:headless",
+    "dev:test": "next dev -p 3002"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -39,6 +40,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "cypress": "^14.3.0",
+    "dotenv": "^16.4.7",
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
     "jest": "^29.7.0",
