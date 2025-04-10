@@ -57,7 +57,7 @@ services:
     networks:
       - puppy-spa-network
     command: >
-      sh -c "npx prisma generate && npx prisma db push --force-reset && npm run start:dev"
+      sh -c "${BACKEND_COMMAND:-npx prisma generate && npx prisma db push --force-reset && npm run start:dev}"
 
   frontend:
     container_name: puppy-spa-frontend
