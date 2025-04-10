@@ -15,7 +15,7 @@ services:
     networks:
       - puppy-spa-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U puppy"]
+      test: ["CMD-SHELL", "pg_isready -U puppy -d puppy_spa"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -69,10 +69,10 @@ services:
       dockerfile: Dockerfile
       target: ${NODE_ENV:-development}
       args:
-        - NEXT_PUBLIC_API_URL=http://backend:3005
+        - NEXT_PUBLIC_API_URL=/api
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - NEXT_PUBLIC_API_URL=http://backend:3005
+      - NEXT_PUBLIC_API_URL=/api
     expose:
       - "3000"
     depends_on:
