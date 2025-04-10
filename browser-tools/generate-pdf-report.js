@@ -10,23 +10,25 @@ async function generatePdfReport() {
   const browser = await chromium.launch({
     headless: true // Must be true for PDF generation
   });
-  
+
   // Create a new context
   const context = await browser.newContext({
     viewport: { width: 1280, height: 720 }
   });
-  
+
   // Create a new page
   const page = await context.newPage();
-  
+
   try {
     // Navigate to the application
     console.log('Navigating to the application...');
-    await page.goto('http://localhost:3000');
-    
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    console.log(`Using app URL: ${appUrl}`);
+    await page.goto(appUrl);
+
     // Wait for the page to load
     await page.waitForLoadState('networkidle');
-    
+
     // Add a title and date to the page for the report
     await page.evaluate(() => {
       const reportHeader = document.createElement('div');
@@ -34,20 +36,20 @@ async function generatePdfReport() {
       reportHeader.style.padding = '20px';
       reportHeader.style.backgroundColor = '#f0f0f0';
       reportHeader.style.marginBottom = '20px';
-      
+
       const title = document.createElement('h1');
       title.textContent = '🐶 Puppy Spa - Daily Waiting List Report';
       title.style.color = '#333';
-      
+
       const date = document.createElement('p');
       date.textContent = `Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`;
       date.style.color = '#666';
-      
+
       reportHeader.appendChild(title);
       reportHeader.appendChild(date);
-      
+
       document.body.insertBefore(reportHeader, document.body.firstChild);
-      
+
       // Add a footer
       const footer = document.createElement('div');
       footer.style.textAlign = 'center';
@@ -55,10 +57,10 @@ async function generatePdfReport() {
       footer.style.marginTop = '20px';
       footer.style.borderTop = '1px solid #ddd';
       footer.textContent = 'Puppy Spa Queue Management System - Confidential';
-      
+
       document.body.appendChild(footer);
     });
-    
+
     // Generate PDF
     console.log('Generating PDF report...');
     await page.pdf({
@@ -72,9 +74,9 @@ async function generatePdfReport() {
         left: '20px'
       }
     });
-    
+
     console.log('PDF report generated successfully!');
-    
+
   } catch (error) {
     console.error('Error generating PDF report:', error);
   } finally {

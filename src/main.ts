@@ -6,8 +6,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend
+  const corsOrigins = process.env.CORS_ORIGINS ?
+    process.env.CORS_ORIGINS.split(',') :
+    ['http://localhost:3001', 'http://localhost:3000', 'http://frontend:3000', 'https://pup-spa.germanywestcentral.cloudapp.azure.com'];
+
+  console.log('CORS origins:', corsOrigins);
+
   app.enableCors({
-    origin: ['http://localhost:3001', 'http://localhost:3000', 'https://pup-spa.germanywestcentral.cloudapp.azure.com'],
+    origin: corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -25,7 +31,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = 3005;
+  const port = process.env.PORT || 3005;
 
   await app.listen(port, '0.0.0.0');
   const address = await app.getUrl();

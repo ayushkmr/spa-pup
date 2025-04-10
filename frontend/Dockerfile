@@ -14,6 +14,9 @@ COPY . .
 # Build the application
 ARG NEXT_PUBLIC_API_URL=http://localhost:3005
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+# Log the API URL for debugging
+RUN echo "Building with API URL: $NEXT_PUBLIC_API_URL"
 RUN npm run build
 
 # Production image
@@ -21,20 +24,20 @@ FROM node:20-alpine AS production
 
 WORKDIR /app
 
+# Install serve for static file serving
+RUN npm install -g serve
+
 # Copy built assets from builder stage
-COPY --from=builder /app/.next /app/.next
-COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/out /app/out
 COPY --from=builder /app/public /app/public
-COPY --from=builder /app/package.json /app/package.json
-COPY --from=builder /app/next.config.ts /app/next.config.ts
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# Start the application
-CMD ["npm", "start"]
+# Start the application with serve
+CMD ["serve", "-s", "out", "-l", "3000"]
 
 EXPOSE 3000
 

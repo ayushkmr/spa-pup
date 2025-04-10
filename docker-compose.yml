@@ -46,11 +46,11 @@ services:
       dockerfile: Dockerfile
       target: production
     environment:
-      - NODE_ENV=production
-      - PORT=3005
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${API_PORT:-3005}
       - HOST=0.0.0.0
       - CORS_ORIGIN=true
-      - DATABASE_URL=postgresql://puppy:puppy_spa@postgres:5432/puppy_spa?schema=public
+      - DATABASE_URL=${DATABASE_URL:-postgresql://puppy:puppy_spa@postgres:5432/puppy_spa?schema=public}
     expose:
       - "3005"
     depends_on:
@@ -69,10 +69,10 @@ services:
       dockerfile: Dockerfile
       target: ${NODE_ENV:-development}
       args:
-        - NEXT_PUBLIC_API_URL=https://pup-spa.germanywestcentral.cloudapp.azure.com/api
+        - NEXT_PUBLIC_API_URL=http://backend:3005
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - NEXT_PUBLIC_API_URL=https://pup-spa.germanywestcentral.cloudapp.azure.com/api
+      - NEXT_PUBLIC_API_URL=http://backend:3005
     expose:
       - "3000"
     depends_on:
