@@ -1,10 +1,12 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
 // Use the environment variable with type assertion for TypeScript
 const API_URL = (process.env.NEXT_PUBLIC_API_URL as string) || 'http://localhost:3005';
 
 // For debugging purposes
-console.log('Using API URL:', API_URL);
+if (process.env.NODE_ENV !== 'test') {
+  console.log('Using API URL:', API_URL);
+}
 
 const api = axios.create({
   baseURL: API_URL,
@@ -15,20 +17,28 @@ const api = axios.create({
 });
 
 // Add request interceptor for debugging
-api.interceptors.request.use(function (config: AxiosRequestConfig) {
-  console.log('API Request:', config);
+api.interceptors.request.use(function (config: InternalAxiosRequestConfig) {
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('API Request:', config);
+  }
   return config;
 }, function (error: AxiosError) {
-  console.error('API Request Error:', error);
+  if (process.env.NODE_ENV !== 'test') {
+    console.error('API Request Error:', error);
+  }
   return Promise.reject(error);
 });
 
 // Add response interceptor for debugging
 api.interceptors.response.use(function (response: AxiosResponse) {
-  console.log('API Response:', response);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('API Response:', response);
+  }
   return response;
 }, function (error: AxiosError) {
-  console.error('API Response Error:', error);
+  if (process.env.NODE_ENV !== 'test') {
+    console.error('API Response Error:', error);
+  }
   return Promise.reject(error);
 });
 
