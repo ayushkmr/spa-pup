@@ -42,13 +42,6 @@ services:
   backend:
     container_name: puppy-spa-api
     image: ${BACKEND_IMAGE:-ghcr.io/ayushkmr/spa-pup-backend:${NODE_ENV:-dev}}
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-      target: ${NODE_ENV:-development}
-      platforms:
-        - linux/amd64
-        - linux/arm64
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=${API_PORT:-3005}
@@ -69,15 +62,6 @@ services:
   frontend:
     container_name: puppy-spa-frontend
     image: ${FRONTEND_IMAGE:-ghcr.io/ayushkmr/spa-pup-frontend:${NODE_ENV:-dev}}
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      target: ${NODE_ENV:-development}
-      platforms:
-        - linux/amd64
-        - linux/arm64
-      args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-/api/}
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-/api/}
