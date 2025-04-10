@@ -2,7 +2,7 @@
 
 import { Nunito } from "next/font/google";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BackgroundImage from "@/components/BackgroundImage";
 import MobileNav from "@/components/MobileNav";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
@@ -38,7 +38,7 @@ function Navigation() {
                 >
                   Today's Queue
                 </Link>
-
+                
                 {isAuthenticated && (
                   <>
                     <Link
@@ -130,17 +130,16 @@ export default function RootLayoutClient({
         <BackgroundImage />
         <AuthProvider>
           <Navigation />
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {children}
-        </main>
-        <footer className="bg-white border-t mt-12 py-6">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-base text-gray-500 italic">
-              "Dogs leave paw prints on our hearts." 🐾
-            </p>
-          </div>
-        </footer>
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {children}
+          </main>
+          <footer className="bg-white border-t mt-12 py-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <p className="text-center text-base text-gray-500 italic">
+                "Dogs leave paw prints on our hearts." 🐾
+              </p>
+            </div>
+          </footer>
         </AuthProvider>
       </body>
     </html>
