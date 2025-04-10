@@ -41,11 +41,11 @@ services:
 
   backend:
     container_name: puppy-spa-api
-    image: ${BACKEND_IMAGE:-ghcr.io/ayushkmr/puppy-spa-backend:latest}
+    image: ${BACKEND_IMAGE:-ghcr.io/ayushkmr/spa-pup-backend:${NODE_ENV:-dev}}
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: ${NODE_ENV:-production}
+      target: ${NODE_ENV:-development}
       platforms:
         - linux/amd64
         - linux/arm64
@@ -64,11 +64,11 @@ services:
     networks:
       - puppy-spa-network
     command: >
-      sh -c "npx prisma generate && npx prisma db push --force-reset && node dist/main"
+      sh -c "npx prisma generate && npx prisma db push --force-reset && npm run start:dev"
 
   frontend:
     container_name: puppy-spa-frontend
-    image: ${FRONTEND_IMAGE:-ghcr.io/ayushkmr/puppy-spa-frontend:latest}
+    image: ${FRONTEND_IMAGE:-ghcr.io/ayushkmr/spa-pup-frontend:${NODE_ENV:-dev}}
     build:
       context: ./frontend
       dockerfile: Dockerfile
