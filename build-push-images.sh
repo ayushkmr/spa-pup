@@ -7,6 +7,15 @@
 ENV=${1:-dev}
 TAG=${ENV}
 
+# Map environment to Docker target stage
+if [ "$ENV" = "dev" ]; then
+  BACKEND_TARGET="development"
+  FRONTEND_TARGET="development"
+else
+  BACKEND_TARGET="production"
+  FRONTEND_TARGET="production"
+fi
+
 # Set repository name
 REPO_NAME="ayushkmr/spa-pup"
 REGISTRY="ghcr.io"
@@ -16,6 +25,7 @@ BACKEND_IMAGE="${REGISTRY}/${REPO_NAME}-backend:${TAG}"
 FRONTEND_IMAGE="${REGISTRY}/${REPO_NAME}-frontend:${TAG}"
 
 echo "Building and pushing images with tag: ${TAG}"
+echo "Backend target: ${BACKEND_TARGET}, Frontend target: ${FRONTEND_TARGET}"
 
 # Create builder instance if it doesn't exist
 if ! docker buildx inspect mybuilder &>/dev/null; then
@@ -30,7 +40,7 @@ docker buildx build \
   --tag ${BACKEND_IMAGE} \
   --push \
   --file ./backend/Dockerfile \
-  --target ${ENV} \
+  --target ${BACKEND_TARGET} \
   ./backend
 
 # Build and push frontend image
@@ -40,7 +50,7 @@ docker buildx build \
   --tag ${FRONTEND_IMAGE} \
   --push \
   --file ./frontend/Dockerfile \
-  --target ${ENV} \
+  --target ${FRONTEND_TARGET} \
   --build-arg NEXT_PUBLIC_API_URL=/api/ \
   ./frontend
 
