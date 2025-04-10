@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN echo "Building with API URL: $NEXT_PUBLIC_API_URL"
 RUN npm run build
 
 # Production image
-FROM --platform=$BUILDPLATFORM node:20-alpine AS production
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
@@ -42,7 +42,7 @@ CMD ["serve", "-s", "out", "-l", "3000"]
 EXPOSE 3000
 
 # Development image
-FROM --platform=$BUILDPLATFORM node:20-alpine AS development
+FROM node:20-alpine AS development
 
 WORKDIR /app
 

@@ -3,14 +3,14 @@ services:
     container_name: puppy-spa-postgres
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: ${DB_USERNAME:-puppy}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-puppy_spa}
-      POSTGRES_DB: ${DB_NAME:-puppy_spa}
+      POSTGRES_USER: puppy
+      POSTGRES_PASSWORD: puppy_spa
+      POSTGRES_DB: puppy_spa
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "5432:5432"
     restart: unless-stopped
     networks:
       - puppy-spa-network
@@ -25,13 +25,13 @@ services:
     container_name: puppy-spa-pgadmin
     image: dpage/pgadmin4:latest
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@puppyspa.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_DEFAULT_EMAIL: admin@puppyspa.com
+      PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
       - pgadmin:/var/lib/pgadmin
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
+      - "5050:80"
     restart: unless-stopped
     networks:
       - puppy-spa-network
@@ -41,13 +41,16 @@ services:
 
   backend:
     container_name: puppy-spa-api
-    image: ${BACKEND_IMAGE:-ghcr.io/ayushkmr/spa-pup-backend:${NODE_ENV:-dev}}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
     environment:
-      - NODE_ENV=${NODE_ENV:-production}
-      - PORT=${API_PORT:-3005}
+      - NODE_ENV=development
+      - PORT=3005
       - HOST=0.0.0.0
       - CORS_ORIGIN=true
-      - DATABASE_URL=${DATABASE_URL:-postgresql://puppy:puppy_spa@postgres:5432/puppy_spa?schema=public}
+      - DATABASE_URL=postgresql://puppy:puppy_spa@postgres:5432/puppy_spa?schema=public
     expose:
       - "3005"
     depends_on:
@@ -57,14 +60,19 @@ services:
     networks:
       - puppy-spa-network
     command: >
-      sh -c "${BACKEND_COMMAND:-npx prisma generate && npx prisma db push --force-reset && npm run start:dev}"
+      sh -c "npx prisma generate && npx prisma db push --force-reset && npm run start:dev"
 
   frontend:
     container_name: puppy-spa-frontend
-    image: ${FRONTEND_IMAGE:-ghcr.io/ayushkmr/spa-pup-frontend:${NODE_ENV:-dev}}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+      args:
+        - NEXT_PUBLIC_API_URL=/api/
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-/api/}
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=/api/
     expose:
       - "3000"
     depends_on:

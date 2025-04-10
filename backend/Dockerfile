@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:20-alpine AS development
+FROM node:20-alpine AS development
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN npm run build
 # Verify that the dist directory is created
 RUN ls -la /app/dist
 
-FROM --platform=$BUILDPLATFORM node:20-alpine AS production
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
