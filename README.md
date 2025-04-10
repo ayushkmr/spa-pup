@@ -163,21 +163,25 @@ See [`backend/prisma/schema.prisma`](backend/prisma/schema.prisma) for details.
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/puppy-spa.git
-cd puppy-spa
+git clone https://github.com/ayushkmr/spa-pup.git
+cd spa-pup
 ```
 
 2. **Start the application using Docker Compose**
 
 ```bash
-docker-compose up -d
+# For development environment
+docker-compose --env-file .env.docker up -d
+
+# For production environment
+docker-compose --env-file .env.production up -d
 ```
 
 This will:
 - Start a PostgreSQL database container
 - Start a PGAdmin container for database management
-- Build and start the NestJS backend container
-- Build and start the Next.js frontend container
+- Pull or build the NestJS backend container
+- Pull or build the Next.js frontend container
 - Run database migrations automatically
 
 3. **Access the application**
@@ -205,12 +209,29 @@ docker-compose logs backend
 docker-compose down
 ```
 
-6. **Rebuild containers after code changes**
+6. **Build and push platform-agnostic Docker images**
 
 ```bash
-docker-compose build
-docker-compose up -d
+# Login to GitHub Container Registry
+echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+
+# Build and push development images
+./build-push-images.sh dev
+
+# Build and push production images
+./build-push-images.sh prod
 ```
+
+7. **Use environment variables to configure the application**
+
+You can customize the application behavior by modifying the environment files:
+- `.env.docker` - Development environment configuration
+- `.env.production` - Production environment configuration
+
+Key environment variables:
+- `NODE_ENV` - Set to `development` or `production`
+- `NEXT_PUBLIC_API_URL` - API URL for frontend to backend communication
+- `DATABASE_URL` - PostgreSQL connection string
 
 ### Option 2: Manual Setup
 
@@ -321,9 +342,13 @@ The frontend will be available at http://localhost:3000
 ### Docker Development
 
 1. **Modify Docker configuration** in `docker-compose.yml`, `backend/Dockerfile`, or `frontend/Dockerfile`
-2. **Rebuild containers** with `docker-compose build`
-3. **Restart services** with `docker-compose up -d`
-4. **View logs** with `docker-compose logs`
+2. **Choose environment** by selecting the appropriate `.env` file:
+   - `.env.docker` for development
+   - `.env.production` for production
+3. **Rebuild containers** with `docker-compose --env-file .env.docker build`
+4. **Restart services** with `docker-compose --env-file .env.docker up -d`
+5. **View logs** with `docker-compose logs`
+6. **Build and push multi-platform images** with `./build-push-images.sh [dev|prod]`
 
 ### Cypress Testing
    ```bash

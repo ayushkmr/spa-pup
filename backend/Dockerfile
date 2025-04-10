@@ -1,4 +1,4 @@
-FROM node:20-alpine AS development
+FROM --platform=$BUILDPLATFORM node:20-alpine AS development
 
 WORKDIR /app
 
@@ -20,7 +20,7 @@ RUN npm run build
 # Verify that the dist directory is created
 RUN ls -la /app/dist
 
-FROM node:20-alpine AS production
+FROM --platform=$BUILDPLATFORM node:20-alpine AS production
 
 WORKDIR /app
 
@@ -39,6 +39,11 @@ COPY prisma ./prisma
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget -q --spider http://localhost:3005/health || exit 1
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3005
+ENV HOST=0.0.0.0
 
 # Command to run the application
 CMD ["node", "dist/main"]
