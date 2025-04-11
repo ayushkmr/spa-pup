@@ -39,7 +39,7 @@ model WaitingListEntry {
   puppyId         Int
   serviceRequired String
   notes           String?     // Optional notes about the service
-  arrivalTime     DateTime    @default(now())
+  arrivalTime     DateTime?   @default(now())
   serviceTime     DateTime?   // Time when the puppy was serviced
   scheduledTime   DateTime?   // For future bookings
   position        Int

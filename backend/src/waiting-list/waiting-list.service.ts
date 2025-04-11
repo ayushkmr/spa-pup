@@ -244,8 +244,8 @@ export class WaitingListService {
         if (entry.serviced) {
           servicedPuppies++;
 
-          // Calculate wait time if service time exists
-          if (entry.serviceTime) {
+          // Calculate wait time if service time and arrival time exist
+          if (entry.serviceTime && entry.arrivalTime) {
             const waitTime = differenceInMinutes(entry.serviceTime, entry.arrivalTime);
             totalWaitTime += waitTime;
             servicedCount++;
