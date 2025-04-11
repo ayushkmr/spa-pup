@@ -48,7 +48,8 @@ The application follows a modern full-stack architecture:
 │   - React           │ <──> │   - REST API        │ <──> │   - Prisma ORM      │
 │   - TypeScript      │      │   - TypeScript      │      │   - Migrations      │
 │   - Tailwind CSS    │      │   - Validation      │      │   - Relationships   │
-│                     │      │                     │      │                     │
+│   - JWT Auth        │      │   - Cron Jobs       │      │                     │
+│                     │      │   - JWT Auth        │      │                     │
 └─────────────────────┘      └─────────────────────┘      └─────────────────────┘
 ```
 
@@ -60,6 +61,11 @@ The application follows a modern full-stack architecture:
 - API client for communication with the backend
 - TypeScript for type safety
 - Responsive design for all device sizes
+- JWT authentication with protected routes
+- Tabbed interface for different appointment statuses
+- Statistics visualization with charts
+- Date range selection for reporting
+- Breed selection and filtering
 
 ### Backend (NestJS)
 - TypeScript-based Node.js framework
@@ -69,6 +75,10 @@ The application follows a modern full-stack architecture:
 - Business logic implementation in services
 - Validation using class-validator
 - Error handling and logging
+- Scheduled tasks using @nestjs/schedule
+- Cron jobs for automated appointment status management
+- JWT-based authentication and authorization
+- Statistics generation and reporting
 
 ### Database (PostgreSQL)
 - Relational database for storing waiting lists, puppies, and entries
@@ -76,6 +86,30 @@ The application follows a modern full-stack architecture:
 - Indexes for performance optimization
 - Relationships between entities
 - Constraints for data integrity
+
+### Automated Processes (Cron Jobs)
+- Scheduled tasks running at regular intervals
+- Automatic status updates for appointments
+- Past waiting appointments automatically marked as cancelled
+- Future scheduled appointments automatically moved to waiting status when their time arrives
+- Runs every minute to ensure timely updates
+
+### Statistics and Analytics
+- Comprehensive statistics dashboard
+- Date range selection for flexible reporting
+- Service breakdown by type
+- Daily totals for appointments
+- Average wait time calculation
+- Most popular service identification
+- Visual representation of data with charts and graphs
+
+### Appointment Management
+- Status tracking (waiting, completed, cancelled)
+- Future appointment scheduling
+- Automatic status transitions based on time
+- Tabbed interface for different appointment statuses
+- Appointment notes and additional information
+- Breed-specific tracking and filtering
 
 ## Data Model
 
@@ -211,6 +245,21 @@ The application will have the following main pages:
    - Show status information for each entry
    - Filter options by date range and status (future enhancement)
 
+6. **Statistics Dashboard**
+   - Overview of key metrics (total puppies, serviced puppies, average wait time)
+   - Service breakdown with percentages
+   - Daily totals visualization
+   - Date range selection for custom reporting periods
+   - Visual charts and graphs for data representation
+   - Most popular service identification
+
+7. **Appointments Management**
+   - View all appointments across different dates
+   - Filter by status (waiting, completed, cancelled, scheduled)
+   - Cancel or reschedule appointments
+   - View appointment details including breed and notes
+   - Automatic status updates based on time
+
 ## Component Structure
 
 ```
@@ -219,6 +268,11 @@ The application will have the following main pages:
 │   ├── Navigation
 │   ├── Footer
 │   └── Page Container
+│
+├── Authentication
+│   ├── LoginForm
+│   ├── ProtectedRoute
+│   └── AuthContext
 │
 ├── Waiting List
 │   ├── TabbedWaitingList
@@ -238,6 +292,19 @@ The application will have the following main pages:
 │   ├── DatePicker
 │   ├── HistoryList
 │   └── HistoryStats
+│
+├── Statistics
+│   ├── StatisticsDashboard
+│   ├── DateRangeSelector
+│   ├── ServiceBreakdownChart
+│   ├── DailyTotalsChart
+│   └── MetricsCards
+│
+├── Appointments
+│   ├── AppointmentsList
+│   ├── AppointmentCard
+│   ├── StatusFilter
+│   └── DateFilter
 │
 └── Search
     ├── SearchInput
@@ -264,6 +331,8 @@ The application will have the following main pages:
    - Comprehensive documentation and active community
    - Built-in support for validation, error handling, and logging
    - Scalable architecture for future growth
+   - Integrated scheduling with @nestjs/schedule for cron jobs
+   - JWT authentication with Passport.js integration
 
 3. **PostgreSQL with Prisma**
    - Relational database for structured data with relationships
@@ -333,10 +402,12 @@ The application will have the following main pages:
    - Least privilege principle for database access
    - Parameterized queries via Prisma to prevent SQL injection
 
-4. **Future Authentication**
-   - JWT-based authentication
-   - Role-based access control
-   - Secure password storage with hashing
+4. **Authentication**
+   - JWT-based authentication implemented
+   - Admin user with special privileges
+   - Secure password storage with bcrypt hashing
+   - Protected routes in frontend
+   - JWT guard in backend API endpoints
 
 ## Deployment Considerations
 
@@ -415,6 +486,8 @@ The application will have the following main pages:
 - Future appointment scheduling
 - Automated status updates via cron jobs
 - Admin user management
+- Statistics dashboard with metrics and charts
+- Comprehensive appointment management
 
 ### Phase 4: Polish and Optimization (Completed)
 - Responsive design for all devices
