@@ -8,14 +8,16 @@ A full-stack web application to manage daily puppy grooming appointments for **P
 
 Puppy Spa operates as a walk-in-only service where puppy owners sign their puppies upon arrival and get serviced in the order they arrive. This application digitizes their current paper-based process, allowing for:
 
-- **Easy puppy registration** - Record owner and puppy details
+- **Easy puppy registration** - Record owner, breed, and puppy details
 - **Daily waiting list management** - Create a new list each day
 - **Flexible queue handling** - Reorder the waiting list when needed
-- **Service tracking** - Mark puppies as serviced
-- **Historical reporting** - View past waiting lists
-- **Search capabilities** - Find specific puppies across all records
+- **Service tracking** - Mark puppies as serviced, cancelled, or completed
+- **Appointment scheduling** - Book future appointments for specific times
+- **Historical reporting** - View past waiting lists with status information
+- **Search capabilities** - Find specific puppies across all records by name, owner, or breed
 - **Pampered Pups Gallery** - Showcase beautifully groomed puppies
 - **Statistics Dashboard** - View service metrics and trends
+- **Automated status updates** - Scheduled appointments automatically move to waiting list
 
 ---
 
@@ -98,6 +100,8 @@ model Puppy {
   id        Int                  @id @default(autoincrement())
   name      String
   ownerName String
+  breed     String?
+  notes     String?
   createdAt DateTime             @default(now())
   entries   WaitingListEntry[]
 }
@@ -107,9 +111,14 @@ model WaitingListEntry {
   waitingListId   Int
   puppyId         Int
   serviceRequired String
-  arrivalTime     DateTime    @default(now())
+  notes           String?
+  arrivalTime     DateTime?   @default(now())
+  serviceTime     DateTime?
+  scheduledTime   DateTime?
   position        Int
   serviced        Boolean     @default(false)
+  isFutureBooking Boolean     @default(false)
+  status          String      @default("waiting")
   createdAt       DateTime    @default(now())
 
   waitingList     WaitingList @relation(fields: [waitingListId], references: [id])
@@ -143,9 +152,12 @@ See [`backend/prisma/schema.prisma`](backend/prisma/schema.prisma) for details.
 | POST | `/waiting-list/add-entry` | Add a puppy to today's waiting list |
 | PATCH | `/waiting-list/reorder` | Reorder entries in the waiting list |
 | PATCH | `/waiting-list/mark-serviced/:entryId` | Mark an entry as serviced |
+| PATCH | `/waiting-list/cancel/:entryId` | Mark an entry as cancelled |
+| POST | `/waiting-list/update-past-appointments` | Update status of past appointments |
 | GET | `/waiting-list/history/:date` | Get waiting list for a specific date |
 | GET | `/waiting-list/all` | Get all waiting lists (for history view) |
 | GET | `/waiting-list/search?q=query` | Search waiting list history |
+| GET | `/waiting-list/statistics` | Get statistics about waiting lists and services |
 
 ---
 
@@ -391,12 +403,15 @@ See [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) for detailed system design documentatio
 
 ### Core Features
 - **Today's Queue Management**: Create and manage the daily waiting list
-- **Puppy Registration**: Add new puppies with owner information
-- **Service Tracking**: Mark puppies as serviced when grooming is complete
+- **Puppy Registration**: Add new puppies with owner, breed, and notes information
+- **Service Tracking**: Mark puppies as completed, cancelled, or waiting
 - **Queue Reordering**: Drag and drop to reorder the waiting list
-- **Tabbed Interface**: Easily switch between waiting and serviced puppies
-- **Search Functionality**: Find puppies by name, owner, or service type
-- **History View**: Access past waiting lists and entries
+- **Tabbed Interface**: Easily switch between waiting, future, completed, and cancelled puppies
+- **Search Functionality**: Find puppies by name, owner, breed, or service type
+- **History View**: Access past waiting lists and entries with status information
+- **Future Bookings**: Schedule appointments for future dates and times
+- **Automated Status Updates**: Cron jobs to automatically update appointment statuses
+- **Comprehensive Seed Data**: Sample data for testing and demonstration
 
 ### UI Enhancements
 - **Pampered Pups Gallery**: Showcase beautifully groomed puppies at the bottom of the page
@@ -412,16 +427,22 @@ See [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) for detailed system design documentatio
 - **API Integration**: Robust API client with error handling
 - **Containerization**: Docker and Docker Compose setup for easy deployment
 - **Development Mode**: Next.js development server for hot reloading during development
+- **Scheduled Tasks**: Cron jobs for automated status updates
+- **Admin User**: Built-in admin user for administrative access
+- **Enhanced Schema**: Improved database schema with optional fields and better relationships
+- **Optimized Queries**: Efficient database queries for better performance
 
 ---
 
 ## 🔮 Future Enhancements
 
-- **Authentication**: Staff login system
+- **Enhanced Authentication**: Role-based staff login system
 - **Notifications**: SMS/email alerts for waiting clients
-- **Analytics Dashboard**: Business insights and reporting
+- **Advanced Analytics**: More detailed business insights and reporting
 - **Mobile App**: Native mobile experience
-- **Appointment Scheduling**: Add appointment booking capability
 - **Customer Portal**: Allow customers to check wait times
 - **Service Catalog**: Manage available services and pricing
 - **Staff Management**: Track staff availability and assignments
+- **Online Booking**: Allow customers to book appointments online
+- **Payment Processing**: Integrate payment gateway for online payments
+- **Loyalty Program**: Implement a loyalty program for regular customers
