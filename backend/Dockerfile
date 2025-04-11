@@ -46,6 +46,6 @@ ENV PORT=3005
 ENV HOST=0.0.0.0
 
 # Command to run the application
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main.js"]
 
 EXPOSE 3005

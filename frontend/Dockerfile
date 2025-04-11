@@ -15,8 +15,7 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL=http://localhost:3005
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
-# Log the API URL for debugging
-RUN echo "Building with API URL: $NEXT_PUBLIC_API_URL"
+# Build the application
 RUN npm run build
 
 # Production image
