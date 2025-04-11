@@ -137,6 +137,47 @@ export class WaitingListService {
     return pastEntries.length;
   }
 
+  async updateScheduledAppointments() {
+    const now = new Date();
+
+    // Find all future bookings that should now be in the waiting list
+    // (scheduled time is in the past but still today)
+    const scheduledEntries = await this.prisma.waitingListEntry.findMany({
+      where: {
+        status: 'waiting',
+        isFutureBooking: true,
+        scheduledTime: {
+          lt: now
+        },
+        waitingList: {
+          date: {
+            gte: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0),
+            lt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0)
+          }
+        }
+      }
+    });
+
+    // Update these entries to be regular waiting entries
+    if (scheduledEntries.length > 0) {
+      await this.prisma.waitingListEntry.updateMany({
+        where: {
+          id: {
+            in: scheduledEntries.map(entry => entry.id)
+          }
+        },
+        data: {
+          isFutureBooking: false,
+          arrivalTime: now
+        }
+      });
+
+      console.log(`Updated ${scheduledEntries.length} scheduled entries to waiting status`);
+    }
+
+    return scheduledEntries.length;
+  }
+
   async getListByDate(date: Date) {
     date.setHours(0, 0, 0, 0);
     return this.prisma.waitingList.findUnique({

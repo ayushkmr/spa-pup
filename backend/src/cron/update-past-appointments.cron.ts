@@ -8,7 +8,7 @@ export class UpdatePastAppointmentsCron {
 
   constructor(private readonly waitingListService: WaitingListService) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     this.logger.log('Running cron job to update past appointments');
     try {

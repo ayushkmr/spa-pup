@@ -315,14 +315,22 @@ export default function TabbedWaitingList({
                       ) : 'Not scheduled'}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                      {onCancelEntry && (
+                      <div className="flex space-x-3">
                         <button
-                          onClick={() => onCancelEntry(entry.id)}
-                          className="text-red-600 hover:text-red-900"
+                          onClick={() => onMarkServiced(entry.id)}
+                          className="text-purple-600 hover:text-purple-900"
                         >
-                          Cancel Appointment
+                          Mark Serviced
                         </button>
-                      )}
+                        {onCancelEntry && (
+                          <button
+                            onClick={() => onCancelEntry(entry.id)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
