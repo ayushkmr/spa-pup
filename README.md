@@ -187,6 +187,9 @@ This will:
 3. **Access the application**
 
 - Frontend: http://localhost:3000
+  - Default admin login:
+    - Username: admin
+    - Password: admin123
 - Backend API: http://localhost:3005
 - PGAdmin (Database Management): http://localhost:5050
   - Email: admin@puppyspa.com
