@@ -4,14 +4,18 @@
 
 ## 📝 User Stories
 
-| User Story | Acceptance Criteria | Priority |
-| --- | --- | --- |
-| **As a Puppy Spa receptionist, I want to easily record a new puppy on the waiting list, so that I can have a sequenced list of puppies to be served** | - The process of entering puppies on the list must be as simple as writing it down on a piece of paper / word document / excel<br>- I should be able to record the name of the owner/puppy, the service they require and their time of arrival | High |
-| **As a Puppy Spa receptionist, I want to be able to create a new waiting list for each day, so that I can organize each day's clients** | - I should be able to easily generate a new waiting list each day by simply clicking a button<br>- Each day should only have one waiting list associated with it | High |
-| **As a Puppy Spa receptionist, I want to be able to see waiting lists from previous days, so that I can report our performance to the accountant** | - I should be able to see a full list of waiting list entries by day | Medium |
-| **As a Puppy Spa receptionist, I want to be able to re-order the waiting list, so that it can reflect the real waiting list** | - I should be able to bump people up or down the waiting list | High |
-| **As a Puppy Spa receptionist, I want to be able to mark clients that have been serviced off of the waiting list, so that I can only focus on clients that are still to be serviced** | - The process of marking a client as serviced must be as easy as ticking a check-box | High |
-| **As a Puppy Spa receptionist, I want to be able to search the entire history of waiting list logs to find records related to a specific puppy, so that I can have a view of our service history to the puppy** | - The ability to search should allow for partial entry of the puppy's details | Low |
+| User Story | Acceptance Criteria | Priority | Status |
+| --- | --- | --- | --- |
+| **As a Puppy Spa receptionist, I want to easily record a new puppy on the waiting list, so that I can have a sequenced list of puppies to be served** | - The process of entering puppies on the list must be as simple as writing it down on a piece of paper / word document / excel<br>- I should be able to record the name of the owner/puppy, breed, the service they require and their time of arrival | High | ✅ Completed |
+| **As a Puppy Spa receptionist, I want to be able to create a new waiting list for each day, so that I can organize each day's clients** | - I should be able to easily generate a new waiting list each day by simply clicking a button<br>- Each day should only have one waiting list associated with it | High | ✅ Completed |
+| **As a Puppy Spa receptionist, I want to be able to see waiting lists from previous days, so that I can report our performance to the accountant** | - I should be able to see a full list of waiting list entries by day | Medium | ✅ Completed |
+| **As a Puppy Spa receptionist, I want to be able to re-order the waiting list, so that it can reflect the real waiting list** | - I should be able to bump people up or down the waiting list | High | ✅ Completed |
+| **As a Puppy Spa receptionist, I want to be able to mark clients that have been serviced off of the waiting list, so that I can only focus on clients that are still to be serviced** | - The process of marking a client as serviced must be as easy as ticking a check-box | High | ✅ Completed |
+| **As a Puppy Spa receptionist, I want to be able to search the entire history of waiting list logs to find records related to a specific puppy, so that I can have a view of our service history to the puppy** | - The ability to search should allow for partial entry of the puppy's details | Low | ✅ Completed |
+| **As a Puppy Spa receptionist, I want to be able to schedule future appointments for puppies, so that I can manage the spa's workload in advance** | - I should be able to book appointments for future dates and times<br>- Future appointments should automatically appear in the waiting list on the scheduled day | Medium | ✅ Completed |
+| **As a Puppy Spa receptionist, I want to be able to cancel appointments, so that I can manage no-shows and cancellations** | - I should be able to mark an appointment as cancelled<br>- Cancelled appointments should be visually distinct from completed ones | Medium | ✅ Completed |
+| **As a Puppy Spa receptionist, I want to record breed information for puppies, so that I can better track our client base** | - I should be able to select or enter a breed when creating a puppy<br>- Breed information should be displayed in the waiting list and history | Medium | ✅ Completed |
+| **As a Puppy Spa manager, I want past waiting appointments to be automatically cancelled at the end of the day, so that the system stays organized** | - Waiting appointments should automatically move to cancelled status when the day completes<br>- This should happen without manual intervention | Low | ✅ Completed |
 
 ---
 
@@ -32,15 +36,17 @@
 #### API Implementation
 - [x] Scaffold NestJS modules, services, controllers
 - [x] Implement Puppy API (create, search)
-  - [x] POST /puppy/create - Create a new puppy
-  - [x] GET /puppy/search - Search for puppies
+  - [x] POST /puppy/create - Create a new puppy with breed information
+  - [x] GET /puppy/search - Search for puppies by name, owner, or breed
   - [x] GET /puppy/all - Get all puppies for dropdown selection
 - [x] Implement Waiting List API
   - [x] POST /waiting-list/create-today - Create today's list
-  - [x] POST /waiting-list/add-entry - Add puppy to today's list
+  - [x] POST /waiting-list/add-entry - Add puppy to today's list with optional scheduling
   - [x] GET /waiting-list/today - Get today's list with entries
   - [x] PATCH /waiting-list/reorder - Reorder entries
-  - [x] PATCH /waiting-list/mark-serviced/:entryId - Mark entry as serviced
+  - [x] PATCH /waiting-list/mark-serviced/:entryId - Mark entry as completed
+  - [x] PATCH /waiting-list/cancel/:entryId - Mark entry as cancelled
+  - [x] POST /waiting-list/update-past-appointments - Update status of past appointments
   - [x] GET /waiting-list/history/:date - Get list by date
   - [x] GET /waiting-list/all - Get all waiting lists for history view
   - [x] GET /waiting-list/search - Search waiting list history
@@ -65,17 +71,22 @@
 
 #### UI Components
 - [x] Create layout component with navigation
-- [x] Create waiting list table component
+- [x] Create tabbed waiting list component
   - [x] Display puppies in order
-  - [x] Show service details
-  - [x] Add serviced checkbox
+  - [x] Show service details and breed information
+  - [x] Add status management (completed, cancelled, waiting)
   - [x] Implement drag-and-drop reordering
+  - [x] Separate tabs for waiting, future, completed, and cancelled
 - [x] Create add entry form component
   - [x] Puppy selection/creation
   - [x] Service selection
+  - [x] Scheduling options for future appointments
+  - [x] Notes field
   - [x] Form validation
 - [x] Create puppy form component
   - [x] Name and owner fields
+  - [x] Breed selection dropdown
+  - [x] Notes field
   - [x] Form validation
 - [x] Create history view component
   - [x] Date selection
@@ -136,11 +147,16 @@
 | Add puppy to list | ✅ | ✅ | ✅ | Completed |
 | View today's list | ✅ | ✅ | ✅ | Completed |
 | Reorder entries | ✅ | ✅ | ✅ | Completed |
-| Mark as serviced | ✅ | ✅ | ✅ | Completed |
+| Mark as completed | ✅ | ✅ | ✅ | Completed |
+| Mark as cancelled | ✅ | ✅ | ✅ | Completed |
 | View history | ✅ | ✅ | ✅ | Completed |
 | Search functionality | ✅ | ✅ | ✅ | Completed |
 | Statistics | ✅ | ✅ | ✅ | Completed |
 | Puppy Gallery | ✅ | ✅ | ✅ | Completed |
+| Breed information | ✅ | ✅ | ✅ | Completed |
+| Future appointments | ✅ | ✅ | ✅ | Completed |
+| Automated status updates | ✅ | ✅ | ✅ | Completed |
+| Admin user | ✅ | ✅ | ✅ | Completed |
 | Deployment | ✅ | ✅ | ✅ | Completed |
 
 ## 🚀 Future Enhancements
@@ -153,21 +169,23 @@
 - [ ] Add print functionality for daily reports
 
 ### Feature Enhancements
-- [ ] Add user authentication and role-based access control
-- [ ] Implement appointment scheduling system
+- [ ] Enhance user authentication with role-based access control
+- [ ] Expand appointment scheduling with recurring appointments
 - [ ] Add customer profiles with contact information and preferences
 - [ ] Create a customer-facing portal for appointment booking
 - [ ] Implement SMS/email notifications for customers
 - [ ] Add inventory management for spa supplies
+- [ ] Implement a loyalty program for regular customers
 
 ### Technical Improvements
 - [ ] Implement real-time updates using WebSockets
-- [ ] Add comprehensive logging and monitoring
+- [ ] Enhance logging and monitoring
 - [ ] Implement automated backups for the database
 - [ ] Set up CI/CD pipeline for automated testing and deployment
-- [ ] Optimize database queries for better performance
+- [ ] Further optimize database queries for better performance
 - [ ] Implement caching for frequently accessed data
 - [ ] Add offline support with service workers
+- [ ] Implement GraphQL API for more efficient data fetching
 
 ### Mobile Experience
 - [ ] Create a dedicated mobile app using React Native

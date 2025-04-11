@@ -86,10 +86,15 @@ The application follows a modern full-stack architecture:
 │ id              │       │ id              │       │ id              │
 │ date            │ 1───* │ waitingListId   │ *───1 │ name            │
 │ createdAt       │       │ puppyId         │       │ ownerName       │
-└─────────────────┘       │ serviceRequired │       │ createdAt       │
-                          │ arrivalTime     │       └─────────────────┘
+└─────────────────┘       │ serviceRequired │       │ breed           │
+                          │ notes           │       │ notes           │
+                          │ arrivalTime     │       │ createdAt       │
+                          │ serviceTime     │       └─────────────────┘
+                          │ scheduledTime   │
                           │ position        │
                           │ serviced        │
+                          │ isFutureBooking │
+                          │ status          │
                           │ createdAt       │
                           └─────────────────┘
 ```
@@ -107,27 +112,36 @@ The application follows a modern full-stack architecture:
 
 2. **Puppy**
    - Represents a puppy client
-   - Has name and owner information
+   - Has name, owner, and breed information
+   - Can include optional notes about the puppy
    - Can be associated with multiple waiting list entries over time
    - Attributes:
      - `id`: Unique identifier
      - `name`: Puppy's name
      - `ownerName`: Owner's name
+     - `breed`: Puppy's breed (optional)
+     - `notes`: Additional information about the puppy (optional)
      - `createdAt`: Timestamp of creation
 
 3. **WaitingListEntry**
    - Represents a puppy's entry on a specific waiting list
-   - Contains service details and status
+   - Contains service details, notes, and status information
    - Has a position for ordering
-   - Can be marked as serviced
+   - Can be marked as completed, cancelled, or waiting
+   - Supports future bookings with scheduled times
    - Attributes:
      - `id`: Unique identifier
      - `waitingListId`: Foreign key to WaitingList
      - `puppyId`: Foreign key to Puppy
      - `serviceRequired`: Description of the service
-     - `arrivalTime`: Time of arrival
+     - `notes`: Additional information about the service (optional)
+     - `arrivalTime`: Time of arrival (optional for future bookings)
+     - `serviceTime`: Time when the service was completed (optional)
+     - `scheduledTime`: Scheduled time for future bookings (optional)
      - `position`: Order in the waiting list
-     - `serviced`: Boolean indicating if serviced
+     - `serviced`: Boolean indicating if serviced (legacy field)
+     - `isFutureBooking`: Boolean indicating if this is a future booking
+     - `status`: Current status (waiting, completed, cancelled)
      - `createdAt`: Timestamp of creation
 
 ## API Endpoints
@@ -138,19 +152,22 @@ The application follows a modern full-stack architecture:
 |--------|----------|-------------|--------------|----------|
 | POST | `/waiting-list/create-today` | Create today's waiting list | None | Created WaitingList |
 | GET | `/waiting-list/today` | Get today's waiting list with entries | None | WaitingList with entries and puppies |
-| POST | `/waiting-list/add-entry` | Add a puppy to today's waiting list | `{ puppyId, serviceRequired, arrivalTime? }` | Created WaitingListEntry |
+| POST | `/waiting-list/add-entry` | Add a puppy to today's waiting list | `{ puppyId, serviceRequired, notes?, arrivalTime?, scheduledTime?, isFutureBooking? }` | Created WaitingListEntry |
 | PATCH | `/waiting-list/reorder` | Reorder entries in the waiting list | `{ entryOrder: number[] }` | Updated entries |
-| PATCH | `/waiting-list/mark-serviced/:entryId` | Mark an entry as serviced | None | Updated entry |
+| PATCH | `/waiting-list/mark-serviced/:entryId` | Mark an entry as completed | None | Updated entry |
+| PATCH | `/waiting-list/cancel/:entryId` | Mark an entry as cancelled | None | Updated entry |
+| POST | `/waiting-list/update-past-appointments` | Update status of past appointments | None | Count of updated entries |
 | GET | `/waiting-list/history/:date` | Get waiting list for a specific date | None | WaitingList with entries and puppies |
 | GET | `/waiting-list/all` | Get all waiting lists (for history view) | None | Array of WaitingLists |
 | GET | `/waiting-list/search?q=query` | Search waiting list history | Query param | Matching entries across lists |
+| GET | `/waiting-list/statistics` | Get statistics for date range | Query params | Statistics data |
 
 ### Puppy Endpoints
 
 | Method | Endpoint | Description | Request Body | Response |
 |--------|----------|-------------|--------------|----------|
-| POST | `/puppy/create` | Create a new puppy | `{ name, ownerName }` | Created Puppy |
-| GET | `/puppy/search?q=query` | Search for puppies | Query param | Matching puppies |
+| POST | `/puppy/create` | Create a new puppy | `{ name, ownerName, breed?, notes? }` | Created Puppy |
+| GET | `/puppy/search?q=query` | Search for puppies by name, owner, or breed | Query param | Matching puppies |
 | GET | `/puppy/all` | Get all puppies | None | Array of Puppies |
 
 ## User Interface
@@ -161,31 +178,38 @@ The application will have the following main pages:
    - View and manage today's waiting list
    - Add new entries
    - Reorder entries using drag and drop
-   - Mark entries as serviced with checkboxes
-   - Visual distinction between serviced and waiting puppies
+   - Mark entries as completed or cancelled
+   - Visual distinction between completed, cancelled, waiting, and scheduled puppies
+   - Tabbed interface to switch between waiting, future, completed, and cancelled
    - Button to create today's list if it doesn't exist
+   - Automatic handling of scheduled appointments
 
 2. **Add Puppy**
-   - Register a new puppy with name and owner details
+   - Register a new puppy with name, owner, and breed details
+   - Optional notes field for additional information
    - Form validation for required fields
    - Success confirmation and redirect
 
 3. **Add to Waiting List**
-   - Search for existing puppies
+   - Search for existing puppies by name, owner, or breed
    - Select a puppy from search results
-   - Enter service required
+   - Enter service required and optional notes
+   - Option to schedule for a future date and time
    - Option to create a new puppy if not found
 
 4. **History View**
    - Calendar or date picker to select a date
    - View waiting list for the selected date
-   - Display statistics (total puppies, services completed)
+   - Display statistics (total puppies, services completed, cancelled)
+   - Show breed information for each puppy
+   - Visual distinction between completed, cancelled, and waiting entries
    - Option to export data (future enhancement)
 
 5. **Search**
-   - Search input for puppy name or owner name
+   - Search input for puppy name, owner name, or breed
    - Display results across all waiting lists
-   - Filter options by date range (future enhancement)
+   - Show status information for each entry
+   - Filter options by date range and status (future enhancement)
 
 ## Component Structure
 
@@ -197,14 +221,16 @@ The application will have the following main pages:
 │   └── Page Container
 │
 ├── Waiting List
-│   ├── WaitingListTable
+│   ├── TabbedWaitingList
 │   ├── WaitingListEntry
 │   ├── CreateListButton
 │   ├── AddEntryButton
-│   └── ServiceCheckbox
+│   ├── StatusControls
+│   └── AppointmentScheduler
 │
 ├── Puppy
 │   ├── PuppyForm
+│   ├── BreedSelector
 │   ├── PuppySearch
 │   └── PuppyCard
 │
@@ -337,56 +363,69 @@ The application will have the following main pages:
 
 ## Future Enhancements
 
-1. **Authentication and Authorization**
-   - Staff login system
-   - Role-based access control
-   - Audit logging
+1. **Enhanced Authentication and Authorization**
+   - Role-based access control with different permission levels
+   - Multi-factor authentication for admin users
+   - Comprehensive audit logging
 
 2. **Advanced Features**
    - Notifications for waiting clients (SMS/email)
-   - Estimated wait time calculation
-   - Service time tracking
-   - Customer feedback collection
+   - Estimated wait time calculation based on historical data
+   - More detailed service time tracking
+   - Customer feedback collection and rating system
+   - Recurring appointment scheduling
 
 3. **Reporting and Analytics**
-   - Business insights dashboard
-   - Service popularity reports
-   - Wait time analytics
-   - Staff performance metrics
+   - Enhanced business insights dashboard
+   - More detailed service popularity reports
+   - Wait time analytics by breed and service type
+   - Staff performance metrics and workload balancing
+   - Revenue forecasting
 
 4. **Integration Possibilities**
-   - Payment processing
-   - Appointment scheduling
-   - Customer loyalty program
-   - Inventory management
+   - Payment processing and invoicing
+   - Customer loyalty program with points and rewards
+   - Inventory management for grooming supplies
+   - Integration with accounting software
+   - Online booking portal for customers
 
 5. **Mobile Experience**
-   - Progressive Web App (PWA)
-   - Native mobile application
-   - Offline support
+   - Progressive Web App (PWA) with offline capabilities
+   - Native mobile application for staff and customers
+   - Push notifications for appointment reminders
+   - Photo capture and sharing of before/after grooming results
 
 ## Implementation Roadmap
 
-### Phase 1: Core Functionality
+### Phase 1: Core Functionality (Completed)
 - Backend API for waiting list and puppy management
 - Basic frontend for today's waiting list
 - Add puppy and add to waiting list functionality
 - Mark as serviced functionality
 
-### Phase 2: Enhanced Features
+### Phase 2: Enhanced Features (Completed)
 - History view with date selection
 - Search functionality
 - Drag and drop reordering
 - Improved UI/UX
 
-### Phase 3: Polish and Optimization
+### Phase 3: Advanced Features (Completed)
+- Appointment status management (completed, cancelled, waiting)
+- Breed information tracking
+- Future appointment scheduling
+- Automated status updates via cron jobs
+- Admin user management
+
+### Phase 4: Polish and Optimization (Completed)
 - Responsive design for all devices
 - Performance optimizations
 - Comprehensive testing
 - Documentation
+- Seed scripts for demonstration data
 
-### Phase 4: Future Enhancements
-- Authentication system
-- Advanced reporting
-- Notifications
-- Additional integrations
+### Phase 5: Future Enhancements (Planned)
+- Enhanced authentication system with roles
+- Advanced reporting and analytics
+- Customer notifications
+- Online booking portal
+- Mobile applications
