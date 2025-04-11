@@ -182,7 +182,10 @@ export default function TabbedWaitingList({
                 #
               </th>
               <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status Puppy & Owner
+                Status & Puppy
+              </th>
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Breed & Owner
               </th>
               <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Service
@@ -231,9 +234,12 @@ export default function TabbedWaitingList({
                         </span>
                         <div>
                           <div className="text-sm font-medium text-gray-900">{entry.puppy.name}</div>
-                          <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{entry.puppy.breed || 'Unknown'}</div>
+                      <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
@@ -294,9 +300,12 @@ export default function TabbedWaitingList({
                         </span>
                         <div>
                           <div className="text-sm font-medium text-gray-900">{entry.puppy.name}</div>
-                          <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{entry.puppy.breed || 'Unknown'}</div>
+                      <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
@@ -355,13 +364,16 @@ export default function TabbedWaitingList({
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">
                         <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 mr-2">
-                          Serviced
+                          Completed
                         </span>
                         <div>
                           <div className="text-sm font-medium text-gray-900">{entry.puppy.name}</div>
-                          <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{entry.puppy.breed || 'Unknown'}</div>
+                      <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
@@ -386,9 +398,12 @@ export default function TabbedWaitingList({
                           </span>
                           <div>
                             <div className="text-sm font-medium text-gray-900">{entry.puppy.name}</div>
-                            <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{entry.puppy.breed || 'Unknown'}</div>
+                        <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{entry.serviceRequired}</div>

@@ -155,6 +155,9 @@ export default function History() {
                         Puppy
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Breed
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Owner
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -178,6 +181,9 @@ export default function History() {
                           <div className="text-sm font-medium text-gray-900">{entry.puppy.name}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{entry.puppy.breed || 'Unknown'}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">{entry.puppy.ownerName}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -188,14 +194,27 @@ export default function History() {
                           {formatTime(entry.arrivalTime)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {entry.serviced ? (
+                          {entry.status === 'completed' ? (
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              Serviced
+                              Completed
+                            </span>
+                          ) : entry.status === 'cancelled' ? (
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                              Cancelled
+                            </span>
+                          ) : entry.isFutureBooking ? (
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                              Scheduled
                             </span>
                           ) : (
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                               Waiting
                             </span>
+                          )}
+                          {entry.scheduledTime && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              {formatTime(entry.scheduledTime)}
+                            </div>
                           )}
                         </td>
                       </tr>

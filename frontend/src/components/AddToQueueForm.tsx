@@ -12,11 +12,29 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
   // Form state
   const [ownerName, setOwnerName] = useState("");
   const [puppyName, setPuppyName] = useState("");
+  const [breed, setBreed] = useState("");
   const [serviceRequired, setServiceRequired] = useState("");
   const [notes, setNotes] = useState("");
   const [isFutureBooking, setIsFutureBooking] = useState(false);
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
+
+  // Common dog breeds
+  const breeds = [
+    "Labrador Retriever",
+    "German Shepherd",
+    "Golden Retriever",
+    "Bulldog",
+    "Beagle",
+    "Poodle",
+    "Rottweiler",
+    "Yorkshire Terrier",
+    "Boxer",
+    "Dachshund",
+    "Shih Tzu",
+    "Mixed Breed",
+    "Other"
+  ];
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -216,7 +234,8 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
         // Create new puppy
         const createResponse = await puppyApi.create({
           name: puppyName.trim(),
-          ownerName: ownerName.trim()
+          ownerName: ownerName.trim(),
+          breed: breed.trim() || undefined
         });
 
         puppyId = createResponse.data.id;
@@ -255,6 +274,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
       setSuccess(true);
       setPuppyName("");
       setOwnerName("");
+      setBreed("");
       setServiceRequired("");
       setNotes("");
       setIsFutureBooking(false);
@@ -434,6 +454,34 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   }
                 </p>
               )}
+            </div>
+
+            <div>
+              <label htmlFor="breed" className="block text-base font-semibold text-gray-700">
+                Breed
+              </label>
+              <div className="mt-1">
+                <select
+                  id="breed"
+                  name="breed"
+                  value={breed}
+                  onChange={(e) => setBreed(e.target.value)}
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md text-base border-gray-300"
+                  disabled={selectedPuppy !== null}
+                >
+                  <option value="">Select a breed</option>
+                  {breeds.map((breedOption) => (
+                    <option key={breedOption} value={breedOption}>
+                      {breedOption}
+                    </option>
+                  ))}
+                </select>
+                {selectedPuppy && selectedPuppy.breed && (
+                  <p className="mt-1 text-sm text-gray-500">
+                    Existing puppy breed: {selectedPuppy.breed}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div>

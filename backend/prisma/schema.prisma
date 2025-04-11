@@ -27,6 +27,8 @@ model Puppy {
   id        Int                  @id @default(autoincrement())
   name      String
   ownerName String
+  breed     String?
+  notes     String?
   createdAt DateTime             @default(now())
   entries   WaitingListEntry[]
 }

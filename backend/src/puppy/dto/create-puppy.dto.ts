@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength, IsOptional } from 'class-validator';
 
 export class CreatePuppyDto {
   @IsString()
@@ -10,4 +10,12 @@ export class CreatePuppyDto {
   @IsNotEmpty()
   @MinLength(1)
   ownerName: string;
+
+  @IsString()
+  @IsOptional()
+  breed?: string;
+
+  @IsString()
+  @IsOptional()
+  notes?: string;
 }

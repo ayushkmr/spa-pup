@@ -8,28 +8,54 @@ export default function AddPuppy() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [ownerName, setOwnerName] = useState("");
+  const [breed, setBreed] = useState("");
+  const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Common dog breeds
+  const breeds = [
+    "Labrador Retriever",
+    "German Shepherd",
+    "Golden Retriever",
+    "Bulldog",
+    "Beagle",
+    "Poodle",
+    "Rottweiler",
+    "Yorkshire Terrier",
+    "Boxer",
+    "Dachshund",
+    "Shih Tzu",
+    "Mixed Breed",
+    "Other"
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name || !ownerName) {
-      setError("Please fill in all fields");
+      setError("Please fill in all required fields (Name and Owner Name)");
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-      
-      await puppyApi.create({ name, ownerName });
-      
+
+      await puppyApi.create({
+        name,
+        ownerName,
+        breed: breed || undefined,
+        notes: notes || undefined
+      });
+
       setSuccess(true);
       setName("");
       setOwnerName("");
-      
+      setBreed("");
+      setNotes("");
+
       // Redirect after a short delay
       setTimeout(() => {
         router.push("/");
@@ -50,7 +76,7 @@ export default function AddPuppy() {
           Enter the puppy and owner information
         </p>
       </div>
-      
+
       {error && (
         <div className="bg-red-50 border-l-4 border-red-500 p-4 mx-6 mb-4">
           <div className="flex">
@@ -65,7 +91,7 @@ export default function AddPuppy() {
           </div>
         </div>
       )}
-      
+
       {success && (
         <div className="bg-green-50 border-l-4 border-green-500 p-4 mx-6 mb-4">
           <div className="flex">
@@ -80,7 +106,7 @@ export default function AddPuppy() {
           </div>
         </div>
       )}
-      
+
       <div className="border-t border-gray-200">
         <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
           <div className="grid grid-cols-1 gap-6">
@@ -98,7 +124,7 @@ export default function AddPuppy() {
                 placeholder="Buddy"
               />
             </div>
-            
+
             <div>
               <label htmlFor="ownerName" className="block text-sm font-medium text-gray-700">
                 Owner Name
@@ -113,7 +139,42 @@ export default function AddPuppy() {
                 placeholder="John Doe"
               />
             </div>
-            
+
+            <div>
+              <label htmlFor="breed" className="block text-sm font-medium text-gray-700">
+                Breed
+              </label>
+              <select
+                id="breed"
+                name="breed"
+                value={breed}
+                onChange={(e) => setBreed(e.target.value)}
+                className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              >
+                <option value="">Select a breed</option>
+                {breeds.map((breedOption) => (
+                  <option key={breedOption} value={breedOption}>
+                    {breedOption}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+                Notes (Optional)
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                rows={3}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                placeholder="Any special care instructions or notes about the puppy"
+              />
+            </div>
+
             <div className="flex justify-end">
               <button
                 type="button"

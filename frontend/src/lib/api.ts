@@ -44,7 +44,7 @@ api.interceptors.response.use(function (response: AxiosResponse) {
 
 // Puppy API
 export const puppyApi = {
-  create: (data: { name: string; ownerName: string }) =>
+  create: (data: { name: string; ownerName: string; breed?: string; notes?: string }) =>
     api.post('/puppy/create', data),
 
   search: (query: string) =>

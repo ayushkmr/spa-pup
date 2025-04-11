@@ -2,6 +2,8 @@ export interface Puppy {
   id: number;
   name: string;
   ownerName: string;
+  breed?: string;
+  notes?: string;
   createdAt: string;
 }
 
