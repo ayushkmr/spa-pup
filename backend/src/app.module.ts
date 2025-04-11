@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { UpdatePastAppointmentsCron } from './cron/update-past-appointments.cron';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -16,9 +16,10 @@ import { UpdatePastAppointmentsCron } from './cron/update-past-appointments.cron
     PuppyModule,
     PrismaModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    CronModule
   ],
   controllers: [AppController],
-  providers: [AppService, UpdatePastAppointmentsCron],
+  providers: [AppService],
 })
 export class AppModule {}
