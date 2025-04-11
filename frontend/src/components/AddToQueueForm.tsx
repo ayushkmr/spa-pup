@@ -14,6 +14,9 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
   const [puppyName, setPuppyName] = useState("");
   const [serviceRequired, setServiceRequired] = useState("");
   const [notes, setNotes] = useState("");
+  const [isFutureBooking, setIsFutureBooking] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [scheduledTime, setScheduledTime] = useState("");
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -62,16 +65,34 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
     setFilteredPuppies(filtered);
     setShowPuppyDropdown(true);
 
-    // If exact match is found, auto-select the puppy
-    const exactMatch = filtered.find(p => p.name.toLowerCase() === puppyName.toLowerCase());
-    if (exactMatch) {
-      setSelectedPuppy(exactMatch);
-      setOwnerName(exactMatch.ownerName);
-      setIsCreatingNewPuppy(false);
+    // If we have an owner name, check for exact match with both name and owner
+    if (ownerName.trim() !== "") {
+      const exactMatch = filtered.find(p =>
+        p.name.toLowerCase() === puppyName.toLowerCase() &&
+        p.ownerName.toLowerCase() === ownerName.toLowerCase()
+      );
+
+      if (exactMatch) {
+        // We have an exact match for both puppy name and owner
+        setSelectedPuppy(exactMatch);
+        setIsCreatingNewPuppy(false);
+      } else {
+        // This might be a new puppy for the existing owner
+        setSelectedPuppy(null);
+        setIsCreatingNewPuppy(true);
+      }
     } else {
-      setIsCreatingNewPuppy(true);
+      // No owner selected yet, check just by puppy name
+      const exactMatch = filtered.find(p => p.name.toLowerCase() === puppyName.toLowerCase());
+      if (exactMatch) {
+        setSelectedPuppy(exactMatch);
+        setOwnerName(exactMatch.ownerName);
+        setIsCreatingNewPuppy(false);
+      } else {
+        setIsCreatingNewPuppy(true);
+      }
     }
-  }, [puppyName, puppies]);
+  }, [puppyName, puppies, ownerName]);
 
   // Filter owners based on input and update filtered puppies when owner changes
   useEffect(() => {
@@ -179,6 +200,11 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
       return;
     }
 
+    if (isFutureBooking && (!scheduledDate || !scheduledTime)) {
+      setError("Please select both date and time for future appointment");
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -210,11 +236,19 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
         // Ignore error if list already exists
       }
 
+      // Prepare scheduled datetime if it's a future booking
+      let scheduledDateTime: Date | undefined = undefined;
+      if (isFutureBooking && scheduledDate && scheduledTime) {
+        scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
+      }
+
       // Add entry to the list
       await waitingListApi.addEntry({
         puppyId,
         serviceRequired,
-        notes: notes.trim() || undefined
+        notes: notes.trim() || undefined,
+        scheduledTime: scheduledDateTime,
+        isFutureBooking
       });
 
       // Reset form
@@ -223,6 +257,9 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
       setOwnerName("");
       setServiceRequired("");
       setNotes("");
+      setIsFutureBooking(false);
+      setScheduledDate("");
+      setScheduledTime("");
       setSelectedPuppy(null);
       setIsCreatingNewPuppy(false);
 
@@ -246,7 +283,15 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
     "Full Grooming",
     "Nail Trimming",
     "Teeth Brushing",
-    "Flea Treatment"
+    "Flea Treatment",
+    "Haircut",
+    "Ear Cleaning",
+    "Paw Massage",
+    "Fur Coloring",
+    "Aromatherapy",
+    "Mud Bath",
+    "Puppy Facial",
+    "De-shedding Treatment"
   ];
 
   return (
@@ -289,7 +334,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
         <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label htmlFor="ownerName" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="ownerName" className="block text-base font-semibold text-gray-700">
                 Owner Name
               </label>
               <div className="mt-1 relative" ref={ownerDropdownRef}>
@@ -300,7 +345,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   value={ownerName}
                   onChange={(e) => setOwnerName(e.target.value)}
                   placeholder="Enter owner's name"
-                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md sm:text-sm border-gray-300"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md text-base border-gray-300"
                 />
                 {showOwnerDropdown && (
                   <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto max-h-60">
@@ -321,13 +366,16 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
               </div>
               {ownerName.trim() !== "" && (
                 <p className="mt-1 text-sm font-medium" style={{ color: Array.from(new Set(puppies.map(p => p.ownerName))).some(name => name.toLowerCase() === ownerName.toLowerCase()) ? '#16a34a' : '#9333ea' }}>
-                  {Array.from(new Set(puppies.map(p => p.ownerName))).some(name => name.toLowerCase() === ownerName.toLowerCase()) ? "Existing owner" : "New owner will be created"}
+                  {Array.from(new Set(puppies.map(p => p.ownerName))).some(name => name.toLowerCase() === ownerName.toLowerCase())
+                    ? `Existing owner: "${ownerName}"`
+                    : `New owner "${ownerName}" will be created`
+                  }
                 </p>
               )}
             </div>
 
             <div>
-              <label htmlFor="puppyName" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="puppyName" className="block text-base font-semibold text-gray-700">
                 Puppy Name
               </label>
               <div className="mt-1 relative" ref={puppyDropdownRef}>
@@ -338,7 +386,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   value={puppyName}
                   onChange={(e) => setPuppyName(e.target.value)}
                   placeholder="Enter puppy's name"
-                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md sm:text-sm border-gray-300"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md text-base border-gray-300"
                   onClick={() => {
                     // Show owner's puppies when clicking on the input if owner is selected
                     if (ownerName.trim() !== "" && !showPuppyDropdown) {
@@ -372,7 +420,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                         className="cursor-pointer hover:bg-purple-50 py-2 px-3"
                       >
                         <div className="font-medium">{puppy.name}</div>
-                        <div className="text-sm text-gray-500">{puppy.ownerName}</div>
+                        <div className="text-sm text-gray-600 font-medium">Owner: {puppy.ownerName}</div>
                       </div>
                     ))}
                   </div>
@@ -380,13 +428,16 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
               </div>
               {puppyName.trim() !== "" && (
                 <p className="mt-1 text-sm font-medium" style={{ color: isCreatingNewPuppy ? '#9333ea' : '#16a34a' }}>
-                  {isCreatingNewPuppy ? "New puppy will be created" : "Using existing puppy"}
+                  {isCreatingNewPuppy
+                    ? `New puppy "${puppyName}" will be created for ${ownerName || 'new owner'}`
+                    : `Using existing puppy "${puppyName}" owned by ${selectedPuppy?.ownerName || ownerName}`
+                  }
                 </p>
               )}
             </div>
 
             <div>
-              <label htmlFor="serviceRequired" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="serviceRequired" className="block text-base font-semibold text-gray-700">
                 Service Required
               </label>
               <div className="mt-1">
@@ -395,7 +446,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   name="serviceRequired"
                   value={serviceRequired}
                   onChange={(e) => setServiceRequired(e.target.value)}
-                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md sm:text-sm border-gray-300"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md text-base border-gray-300"
                 >
                   <option value="">Select a service</option>
                   {serviceOptions.map((service) => (
@@ -408,7 +459,7 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
             </div>
 
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="notes" className="block text-base font-semibold text-gray-700">
                 Notes (Optional)
               </label>
               <div className="mt-1">
@@ -419,10 +470,64 @@ export default function AddToQueueForm({ onSuccess }: AddToQueueFormProps) {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Any special requirements or notes"
-                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md sm:text-sm border-gray-300"
+                  className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md text-base border-gray-300"
                 />
               </div>
             </div>
+
+            <div className="md:col-span-2">
+              <div className="flex items-center">
+                <input
+                  id="futureBooking"
+                  name="futureBooking"
+                  type="checkbox"
+                  checked={isFutureBooking}
+                  onChange={(e) => setIsFutureBooking(e.target.checked)}
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                />
+                <label htmlFor="futureBooking" className="ml-2 block text-base font-semibold text-gray-700">
+                  Schedule for future appointment
+                </label>
+              </div>
+            </div>
+
+            {isFutureBooking && (
+              <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="scheduledDate" className="block text-base font-semibold text-gray-700">
+                    Appointment Date
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="date"
+                      id="scheduledDate"
+                      name="scheduledDate"
+                      value={scheduledDate}
+                      onChange={(e) => setScheduledDate(e.target.value)}
+                      className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md text-base border-gray-300"
+                      min={new Date().toISOString().split('T')[0]}
+                      required={isFutureBooking}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="scheduledTime" className="block text-base font-semibold text-gray-700">
+                    Appointment Time
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      type="time"
+                      id="scheduledTime"
+                      name="scheduledTime"
+                      value={scheduledTime}
+                      onChange={(e) => setScheduledTime(e.target.value)}
+                      className="focus:ring-purple-500 focus:border-purple-500 block w-full rounded-md text-base border-gray-300"
+                      required={isFutureBooking}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="md:col-span-2 flex justify-center sm:justify-end">
               <button
