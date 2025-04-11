@@ -39,8 +39,10 @@ model WaitingListEntry {
   notes           String?     // Optional notes about the service
   arrivalTime     DateTime    @default(now())
   serviceTime     DateTime?   // Time when the puppy was serviced
+  scheduledTime   DateTime?   // For future bookings
   position        Int
   serviced        Boolean     @default(false)
+  isFutureBooking Boolean     @default(false) // Indicates if this is a future booking
   createdAt       DateTime    @default(now())
 
   waitingList     WaitingList @relation(fields: [waitingListId], references: [id])

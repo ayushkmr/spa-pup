@@ -11,7 +11,7 @@ interface MobileNavProps {
 
 export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
   const pathname = usePathname();
-  
+
   // Close the menu when clicking outside or pressing escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -40,11 +40,11 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity" 
+      <div
+        className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity"
         onClick={onClose}
       />
-      
+
       {/* Menu panel */}
       <div className="fixed inset-y-0 right-0 max-w-xs w-full bg-white shadow-xl flex flex-col">
         <div className="flex items-center justify-between px-4 pt-5 pb-2">
@@ -54,7 +54,7 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
               Puppy Spa
             </span>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
           >
@@ -64,15 +64,15 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
             </svg>
           </button>
         </div>
-        
+
         <div className="mt-6 px-4 pb-6 flex-1 overflow-y-auto">
           <nav className="flex flex-col space-y-2">
             <Link
               href="/"
               onClick={handleLinkClick}
               className={`px-3 py-3 rounded-md text-base font-medium ${
-                pathname === '/' 
-                  ? 'text-purple-600 bg-purple-50' 
+                pathname === '/'
+                  ? 'text-purple-600 bg-purple-50'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -82,8 +82,8 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
               href="/add-puppy"
               onClick={handleLinkClick}
               className={`px-3 py-3 rounded-md text-base font-medium ${
-                pathname === '/add-puppy' 
-                  ? 'text-purple-600 bg-purple-50' 
+                pathname === '/add-puppy'
+                  ? 'text-purple-600 bg-purple-50'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -93,19 +93,30 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
               href="/add-entry"
               onClick={handleLinkClick}
               className={`px-3 py-3 rounded-md text-base font-medium ${
-                pathname === '/add-entry' 
-                  ? 'text-purple-600 bg-purple-50' 
+                pathname === '/add-entry'
+                  ? 'text-purple-600 bg-purple-50'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
               Add to Queue
             </Link>
             <Link
+              href="/appointments"
+              onClick={handleLinkClick}
+              className={`px-3 py-3 rounded-md text-base font-medium ${
+                pathname === '/appointments'
+                  ? 'text-purple-600 bg-purple-50'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              Appointments
+            </Link>
+            <Link
               href="/history"
               onClick={handleLinkClick}
               className={`px-3 py-3 rounded-md text-base font-medium ${
-                pathname === '/history' 
-                  ? 'text-purple-600 bg-purple-50' 
+                pathname === '/history'
+                  ? 'text-purple-600 bg-purple-50'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -115,8 +126,8 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
               href="/search"
               onClick={handleLinkClick}
               className={`px-3 py-3 rounded-md text-base font-medium ${
-                pathname === '/search' 
-                  ? 'text-purple-600 bg-purple-50' 
+                pathname === '/search'
+                  ? 'text-purple-600 bg-purple-50'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -126,8 +137,8 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
               href="/statistics"
               onClick={handleLinkClick}
               className={`px-3 py-3 rounded-md text-base font-medium ${
-                pathname === '/statistics' 
-                  ? 'text-purple-600 bg-purple-50' 
+                pathname === '/statistics'
+                  ? 'text-purple-600 bg-purple-50'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -135,7 +146,7 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
             </Link>
           </nav>
         </div>
-        
+
         <div className="px-4 py-4 border-t border-gray-200">
           <p className="text-sm text-gray-500 italic">
             "Dogs leave paw prints on our hearts." 🐾

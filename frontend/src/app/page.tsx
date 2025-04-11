@@ -45,6 +45,14 @@ export default function Home() {
 
   useEffect(() => {
     fetchTodayList();
+
+    // Set up a timer to refresh the list every minute to check for appointments
+    // that should move from future to waiting
+    const timer = setInterval(() => {
+      fetchTodayList();
+    }, 60000); // Refresh every minute
+
+    return () => clearInterval(timer);
   }, []);
 
   const handleMarkServiced = async (entryId: number) => {

@@ -12,8 +12,10 @@ export interface WaitingListEntry {
   serviceRequired: string;
   notes?: string;
   arrivalTime: string;
+  scheduledTime?: string;
   position: number;
   serviced: boolean;
+  isFutureBooking: boolean;
   createdAt: string;
   serviceTime?: string;
   puppy: Puppy;

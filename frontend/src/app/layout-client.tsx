@@ -54,6 +54,12 @@ function Navigation() {
                       Add to Queue
                     </Link>
                     <Link
+                      href="/appointments"
+                      className="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-base font-medium text-gray-500 hover:text-purple-600 hover:border-purple-300 transition-colors"
+                    >
+                      Appointments
+                    </Link>
+                    <Link
                       href="/history"
                       className="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-base font-medium text-gray-500 hover:text-purple-600 hover:border-purple-300 transition-colors"
                     >

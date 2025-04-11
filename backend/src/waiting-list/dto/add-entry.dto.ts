@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsDate } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsDate, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class AddEntryDto {
@@ -18,4 +18,13 @@ export class AddEntryDto {
   @IsDate()
   @Type(() => Date)
   arrivalTime?: Date;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  scheduledTime?: Date;
+
+  @IsOptional()
+  @IsBoolean()
+  isFutureBooking?: boolean;
 }

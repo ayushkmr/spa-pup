@@ -17,7 +17,14 @@ export class WaitingListService {
     });
   }
 
-  async addEntryToTodayList(puppyId: number, serviceRequired: string, arrivalTime?: Date, notes?: string) {
+  async addEntryToTodayList(
+    puppyId: number,
+    serviceRequired: string,
+    arrivalTime?: Date,
+    notes?: string,
+    scheduledTime?: Date,
+    isFutureBooking?: boolean
+  ) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const waitingList = await this.prisma.waitingList.findUnique({ where: { date: today } });
@@ -29,6 +36,7 @@ export class WaitingListService {
     });
 
     console.log('Creating entry with notes:', notes);
+    console.log('Future booking:', isFutureBooking, 'Scheduled time:', scheduledTime);
 
     const result = await this.prisma.waitingListEntry.create({
       data: {
@@ -37,6 +45,8 @@ export class WaitingListService {
         serviceRequired,
         notes,
         arrivalTime: arrivalTime ?? new Date(),
+        scheduledTime,
+        isFutureBooking: isFutureBooking ?? false,
         position: (maxPosition._max.position ?? 0) + 1,
       },
     });

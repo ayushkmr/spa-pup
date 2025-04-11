@@ -16,11 +16,14 @@ export class WaitingListController {
   @Post('add-entry')
   async addEntry(@Body() addEntryDto: AddEntryDto) {
     console.log('Adding entry with notes:', addEntryDto.notes);
+    console.log('Future booking:', addEntryDto.isFutureBooking, 'Scheduled time:', addEntryDto.scheduledTime);
     return this.waitingListService.addEntryToTodayList(
       addEntryDto.puppyId,
       addEntryDto.serviceRequired,
       addEntryDto.arrivalTime,
-      addEntryDto.notes
+      addEntryDto.notes,
+      addEntryDto.scheduledTime,
+      addEntryDto.isFutureBooking
     );
   }
 
