@@ -43,6 +43,7 @@ model WaitingListEntry {
   position        Int
   serviced        Boolean     @default(false)
   isFutureBooking Boolean     @default(false) // Indicates if this is a future booking
+  status          String      @default("waiting") // "waiting", "completed", "cancelled"
   createdAt       DateTime    @default(now())
 
   waitingList     WaitingList @relation(fields: [waitingListId], references: [id])

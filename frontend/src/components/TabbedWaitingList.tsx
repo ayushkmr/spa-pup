@@ -7,6 +7,7 @@ interface TabbedWaitingListProps {
   entries: WaitingListEntry[];
   onReorder: (entries: WaitingListEntry[]) => void;
   onMarkServiced: (entryId: number) => void;
+  onCancelEntry?: (entryId: number) => void;
   reordering: boolean;
   formatTime: (dateString: string) => string;
 }
@@ -15,10 +16,11 @@ export default function TabbedWaitingList({
   entries,
   onReorder,
   onMarkServiced,
+  onCancelEntry,
   reordering,
   formatTime
 }: TabbedWaitingListProps) {
-  const [activeTab, setActiveTab] = useState<'waiting' | 'serviced' | 'future'>('waiting');
+  const [activeTab, setActiveTab] = useState<'waiting' | 'serviced' | 'future' | 'cancelled'>('waiting');
   const [draggedItemIndex, setDraggedItemIndex] = useState<number | null>(null);
   const [dragOverItemIndex, setDragOverItemIndex] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
@@ -45,14 +47,16 @@ export default function TabbedWaitingList({
 
   // Filter entries based on their status and time
   const waitingEntries = entries.filter(entry =>
-    (!entry.serviced && !entry.isFutureBooking) || // Regular waiting entries
-    (entry.isFutureBooking && shouldBeInWaiting(entry)) // Future entries that should now be in waiting
+    (entry.status === 'waiting' && !entry.isFutureBooking) || // Regular waiting entries
+    (entry.isFutureBooking && shouldBeInWaiting(entry) && entry.status !== 'cancelled') // Future entries that should now be in waiting
   );
 
-  const servicedEntries = entries.filter(entry => entry.serviced);
+  const servicedEntries = entries.filter(entry => entry.status === 'completed');
+
+  const cancelledEntries = entries.filter(entry => entry.status === 'cancelled');
 
   const futureEntries = entries.filter(entry =>
-    entry.isFutureBooking && !shouldBeInWaiting(entry) // Only future entries that shouldn't be in waiting yet
+    entry.isFutureBooking && !shouldBeInWaiting(entry) && entry.status === 'waiting' // Only future entries that shouldn't be in waiting yet
   );
 
   const handleDragStart = (index: number) => {
@@ -155,7 +159,17 @@ export default function TabbedWaitingList({
           }`}
           onClick={() => setActiveTab('serviced')}
         >
-          Serviced ({servicedEntries.length})
+          Completed ({servicedEntries.length})
+        </button>
+        <button
+          className={`flex-1 py-2 text-center font-medium ${
+            activeTab === 'cancelled'
+              ? 'text-purple-600 border-b-2 border-purple-500'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+          onClick={() => setActiveTab('cancelled')}
+        >
+          Cancelled ({cancelledEntries.length})
         </button>
       </div>
 
@@ -176,7 +190,7 @@ export default function TabbedWaitingList({
               <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 {activeTab === 'future' ? 'Scheduled Date & Time' : 'Time'}
               </th>
-              {activeTab === 'waiting' && (
+              {(activeTab === 'waiting' || activeTab === 'future') && (
                 <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -236,12 +250,22 @@ export default function TabbedWaitingList({
                       )}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => onMarkServiced(entry.id)}
-                        className="text-purple-600 hover:text-purple-900"
-                      >
-                        Mark Serviced
-                      </button>
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={() => onMarkServiced(entry.id)}
+                          className="text-purple-600 hover:text-purple-900"
+                        >
+                          Mark Serviced
+                        </button>
+                        {onCancelEntry && (
+                          <button
+                            onClick={() => onCancelEntry(entry.id)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -290,6 +314,16 @@ export default function TabbedWaitingList({
                         </div>
                       ) : 'Not scheduled'}
                     </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                      {onCancelEntry && (
+                        <button
+                          onClick={() => onCancelEntry(entry.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Cancel Appointment
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -330,6 +364,55 @@ export default function TabbedWaitingList({
                     </td>
                   </tr>
                 ))
+              ) : activeTab === 'cancelled' ? (
+                cancelledEntries.length > 0 ? (
+                  cancelledEntries.map((entry) => (
+                    <tr key={entry.id} className="bg-red-50">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {entry.position}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 mr-2">
+                            Cancelled
+                          </span>
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{entry.puppy.name}</div>
+                            <div className="text-sm text-gray-500">{entry.puppy.ownerName}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{entry.serviceRequired}</div>
+                        {entry.notes && <div className="text-xs text-gray-500 mt-1 italic">{entry.notes}</div>}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {entry.isFutureBooking && entry.scheduledTime ? (
+                          <div>
+                            <div className="font-medium">{new Date(entry.scheduledTime).toLocaleDateString('en-US', {
+                              weekday: 'short',
+                              month: 'short',
+                              day: 'numeric'
+                            })}</div>
+                            <div>{formatTime(entry.scheduledTime)}</div>
+                          </div>
+                        ) : (
+                          formatTime(entry.arrivalTime)
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center">
+                      <div className="text-center">
+                        <div className="text-4xl mb-3">🚫</div>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">No cancelled appointments</h3>
+                        <p className="text-sm text-gray-500">Cancelled appointments will appear here</p>
+                      </div>
+                    </td>
+                  </tr>
+                )
               ) : (
                 <tr>
                   <td colSpan={4} className="px-4 py-8 text-center">

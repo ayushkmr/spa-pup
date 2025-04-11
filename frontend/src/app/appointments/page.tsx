@@ -11,7 +11,7 @@ export default function Appointments() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedList, setSelectedList] = useState<WaitingList | null>(null);
-  const [viewMode, setViewMode] = useState<'all' | 'unserviced' | 'future'>('all');
+  const [viewMode, setViewMode] = useState<'all' | 'unserviced' | 'future' | 'cancelled'>('all');
 
   useEffect(() => {
     const fetchWaitingLists = async () => {
@@ -20,12 +20,12 @@ export default function Appointments() {
         setError(null);
 
         const response = await waitingListApi.getAll();
-        
+
         // Sort lists by date (newest first)
-        const sortedLists = response.data.sort((a, b) => 
+        const sortedLists = response.data.sort((a, b) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        
+
         setWaitingLists(sortedLists);
 
         // Select the most recent list by default
@@ -66,12 +66,37 @@ export default function Appointments() {
     });
   };
 
+  const handleCancelEntry = async (entryId: number) => {
+    try {
+      await waitingListApi.cancelEntry(entryId);
+
+      // Refresh the data
+      const response = await waitingListApi.getAll();
+      const sortedLists = response.data.sort((a, b) =>
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+
+      setWaitingLists(sortedLists);
+
+      // Update the selected list
+      if (selectedDate) {
+        const updatedList = sortedLists.find(list => list.date === selectedDate) || null;
+        setSelectedList(updatedList);
+      }
+    } catch (err) {
+      setError("Failed to cancel entry");
+      console.error(err);
+    }
+  };
+
   // Filter entries based on view mode
   const getFilteredEntries = (entries: WaitingListEntry[]) => {
     if (viewMode === 'unserviced') {
-      return entries.filter(entry => !entry.serviced);
+      return entries.filter(entry => entry.status === 'waiting');
     } else if (viewMode === 'future') {
-      return entries.filter(entry => entry.isFutureBooking);
+      return entries.filter(entry => entry.isFutureBooking && entry.status === 'waiting');
+    } else if (viewMode === 'cancelled') {
+      return entries.filter(entry => entry.status === 'cancelled');
     }
     return entries;
   };
@@ -112,12 +137,13 @@ export default function Appointments() {
           <div className="mt-4 sm:mt-0">
             <select
               value={viewMode}
-              onChange={(e) => setViewMode(e.target.value as 'all' | 'unserviced' | 'future')}
+              onChange={(e) => setViewMode(e.target.value as 'all' | 'unserviced' | 'future' | 'cancelled')}
               className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md"
             >
               <option value="all">All Appointments</option>
-              <option value="unserviced">Unserviced Only</option>
+              <option value="unserviced">Waiting Only</option>
               <option value="future">Future Bookings Only</option>
+              <option value="cancelled">Cancelled Only</option>
             </select>
           </div>
         </div>
@@ -190,23 +216,35 @@ export default function Appointments() {
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Time
                     </th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {getFilteredEntries(selectedList.entries).length > 0 ? (
                     getFilteredEntries(selectedList.entries).map((entry) => (
-                      <tr key={entry.id} className={entry.isFutureBooking ? 'bg-blue-50' : entry.serviced ? 'bg-green-50' : 'bg-white'}>
+                      <tr key={entry.id} className={
+                        entry.status === 'cancelled' ? 'bg-red-50' :
+                        entry.isFutureBooking ? 'bg-blue-50' :
+                        entry.status === 'completed' ? 'bg-green-50' :
+                        'bg-white'
+                      }>
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                           {entry.position}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          {entry.isFutureBooking ? (
+                          {entry.status === 'cancelled' ? (
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                              Cancelled
+                            </span>
+                          ) : entry.isFutureBooking && entry.status === 'waiting' ? (
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                               Future
                             </span>
-                          ) : entry.serviced ? (
+                          ) : entry.status === 'completed' ? (
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              Serviced
+                              Completed
                             </span>
                           ) : (
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
@@ -241,11 +279,21 @@ export default function Appointments() {
                             formatTime(entry.arrivalTime)
                           )}
                         </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                          {(entry.status === 'waiting' || (entry.isFutureBooking && entry.status !== 'cancelled')) && (
+                            <button
+                              onClick={() => handleCancelEntry(entry.id)}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center">
+                      <td colSpan={6} className="px-4 py-8 text-center">
                         <div className="text-center">
                           <div className="text-4xl mb-3">📅</div>
                           <h3 className="text-lg leading-6 font-medium text-gray-900 mb-2">No appointments found</h3>

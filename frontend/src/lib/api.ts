@@ -77,6 +77,12 @@ export const waitingListApi = {
   markServiced: (entryId: number) =>
     api.patch(`/waiting-list/mark-serviced/${entryId}`),
 
+  cancelEntry: (entryId: number) =>
+    api.patch(`/waiting-list/cancel/${entryId}`),
+
+  updatePastAppointments: () =>
+    api.post('/waiting-list/update-past-appointments'),
+
   getByDate: (date: string) =>
     api.get(`/waiting-list/history/${date}`),
 

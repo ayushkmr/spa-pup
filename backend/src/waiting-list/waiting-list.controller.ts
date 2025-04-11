@@ -51,6 +51,16 @@ export class WaitingListController {
     return this.waitingListService.markEntryServiced(entryId);
   }
 
+  @Patch('cancel/:entryId')
+  async cancelEntry(@Param('entryId') entryId: number) {
+    return this.waitingListService.cancelEntry(entryId);
+  }
+
+  @Post('update-past-appointments')
+  async updatePastAppointments() {
+    return this.waitingListService.updatePastAppointments();
+  }
+
   @Get('history/:date')
   async getListByDate(@Param('date') date: string) {
     return this.waitingListService.getListByDate(new Date(date));

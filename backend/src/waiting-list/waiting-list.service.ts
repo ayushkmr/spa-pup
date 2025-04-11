@@ -87,9 +87,54 @@ export class WaitingListService {
       where: { id: entryId },
       data: {
         serviced: true,
-        serviceTime: new Date() // Set the service time to now
+        serviceTime: new Date(), // Set the service time to now
+        status: 'completed'
       },
     });
+  }
+
+  async cancelEntry(entryId: number) {
+    return this.prisma.waitingListEntry.update({
+      where: { id: entryId },
+      data: {
+        status: 'cancelled'
+      },
+    });
+  }
+
+  async updatePastAppointments() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Find all waiting entries from past days
+    const pastEntries = await this.prisma.waitingListEntry.findMany({
+      where: {
+        status: 'waiting',
+        waitingList: {
+          date: {
+            lt: today
+          }
+        }
+      }
+    });
+
+    // Update all past waiting entries to cancelled
+    if (pastEntries.length > 0) {
+      await this.prisma.waitingListEntry.updateMany({
+        where: {
+          id: {
+            in: pastEntries.map(entry => entry.id)
+          }
+        },
+        data: {
+          status: 'cancelled'
+        }
+      });
+
+      console.log(`Updated ${pastEntries.length} past entries to cancelled`);
+    }
+
+    return pastEntries.length;
   }
 
   async getListByDate(date: Date) {

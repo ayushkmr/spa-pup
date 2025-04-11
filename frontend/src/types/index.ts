@@ -18,6 +18,7 @@ export interface WaitingListEntry {
   isFutureBooking: boolean;
   createdAt: string;
   serviceTime?: string;
+  status?: string; // 'waiting', 'completed', 'cancelled'
   puppy: Puppy;
 }
 

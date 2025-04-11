@@ -6,10 +6,19 @@ import { PuppyModule } from './puppy/puppy.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { UpdatePastAppointmentsCron } from './cron/update-past-appointments.cron';
 
 @Module({
-  imports: [WaitingListModule, PuppyModule, PrismaModule, AuthModule, UsersModule],
+  imports: [
+    ScheduleModule.forRoot(),
+    WaitingListModule,
+    PuppyModule,
+    PrismaModule,
+    AuthModule,
+    UsersModule
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UpdatePastAppointmentsCron],
 })
 export class AppModule {}

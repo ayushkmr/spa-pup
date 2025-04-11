@@ -65,6 +65,16 @@ export default function Home() {
     }
   };
 
+  const handleCancelEntry = async (entryId: number) => {
+    try {
+      await waitingListApi.cancelEntry(entryId);
+      fetchTodayList();
+    } catch (err) {
+      setError("Failed to cancel entry");
+      console.error(err);
+    }
+  };
+
   const handleReorderEntries = async (entries: WaitingListEntry[]) => {
     try {
       setReordering(true);
@@ -139,6 +149,7 @@ export default function Home() {
               entries={waitingList.entries}
               onReorder={handleReorderEntries}
               onMarkServiced={handleMarkServiced}
+              onCancelEntry={handleCancelEntry}
               reordering={reordering}
               formatTime={formatTime}
             />
